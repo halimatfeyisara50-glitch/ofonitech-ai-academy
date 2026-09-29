@@ -2,10 +2,12 @@
   "name": "ofonitech-ai-academy",
   "version": "1.0.0",
   "description": "OfoniTech AI Academy Node.js Web Application & API",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "build": "echo 'Build complete'",
+    "deploy": "npx wrangler pages deploy public"
   },
   "keywords": [
     "ofonitech-ai",
