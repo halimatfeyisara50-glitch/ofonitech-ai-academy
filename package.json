@@ -1,0 +1,24 @@
+{
+  "name": "ofonitech-ai-academy",
+  "version": "1.0.0",
+  "description": "OfoniTech AI Academy Node.js Web Application & API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "ofonitech-ai",
+    "nodejs",
+    "express",
+    "education",
+    "tech-academy"
+  ],
+  "author": "OfoniTech AI Academy",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

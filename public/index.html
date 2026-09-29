@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfoniTech AI Academy | Next-Gen Tech & AI Engineering Institute</title>
+    <meta name="description" content="Master AI Video Generation, Web & Mobile Engineering, and AI Automation (n8n, Make, Zapier) with OfoniTech AI Academy. Online & Physical Campus in Nigeria.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome / Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="dark-theme">
+    <!-- Ambient Background Glow Effects -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <!-- Navigation Header -->
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+                <div class="logo-text">OfoniTech <span>AI ACADEMY</span></div>
+            </a>
+
+            <nav class="nav-links" id="nav-links">
+                <a href="#programs" class="nav-link">Programs</a>
+                <a href="#tuition" class="nav-link">Tuition Matrix</a>
+                <a href="#curriculum" class="nav-link">Curriculum</a>
+                <a href="#campus" class="nav-link">Campus Hub</a>
+                <a href="#faqs" class="nav-link">FAQs</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+
+            <div class="nav-actions">
+                <span class="node-badge" title="Powered by Node.js Server Architecture"><i class="fa-brands fa-node-js"></i> Node.js Engine</span>
+                <button class="btn btn-primary" onclick="openEnrollModal()">
+                    <i class="fa-solid fa-rocket"></i> Enroll Now
+                </button>
+                <button class="mobile-toggle" id="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="badge-pill">
+                    <span class="badge-pulse"></span>
+                    <span>Admissions Open for 2026 Cohort</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+
+                <h1 class="hero-title">
+                    Master <span class="gradient-text">AI Video, Web Engineering</span> & Enterprise <span class="gradient-text-alt">AI Automation</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Transform your career with <strong>OfoniTech AI Academy</strong>'s high-impact 3-Month and 6-Month intensive tracks. Choose <strong>Online Learning</strong> or study at our state-of-the-art <strong>Physical Campus Hubs</strong> in Nigeria. Powered by a Node.js backend.
+                </p>
+
+                <div class="hero-cta-group">
+                    <a href="#tuition" class="btn btn-lg btn-primary">
+                        <i class="fa-solid fa-calculator"></i> Explore Programs & Fees
+                    </a>
+                    <button class="btn btn-lg btn-glass" onclick="scrollToCurriculum()">
+                        <i class="fa-solid fa-book-open"></i> View Curriculum
+                    </button>
+                </div>
+
+                <!-- Live Node Stats Bar -->
+                <div class="stats-bar" id="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number" id="stat-graduates">1,500+</div>
+                        <div class="stat-label">Academy Graduates</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="stat-rate">94.8%</div>
+                        <div class="stat-label">Hired or Freelancing</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="stat-projects">4,800+</div>
+                        <div class="stat-label">AI Projects Built</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Physical Campus Hub</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tuition Matrix & Program Switcher Section -->
+        <section class="section" id="tuition">
+            <div class="container">
+                <div class="section-header center">
+                    <div class="section-tag">FLEXIBLE LEARNING MODES</div>
+                    <h2 class="section-title">Programs & <span class="gradient-text">Tuition Matrix</span></h2>
+                    <p class="section-desc">Select your learning format below to view live calculated tuition fees powered by our Node.js pricing API.</p>
+
+                    <!-- Interactive Mode Switcher -->
+                    <div class="mode-switcher-container">
+                        <span class="switcher-label" id="label-online">Online Only</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="modeToggle" onchange="handleModeToggle()">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="switcher-label" id="label-hybrid">
+                            Hybrid <span class="highlight-badge">Online + Physical Campus</span>
+                        </span>
+                    </div>
+
+                    <!-- Promo Code Applicator -->
+                    <div class="promo-bar">
+                        <i class="fa-solid fa-tag promo-icon"></i>
+                        <input type="text" id="promoInput" placeholder="Enter promo code (e.g. OFONI2026, EARLYBIRD)" class="promo-input">
+                        <button class="btn btn-sm btn-primary" onclick="applyPromoCode()">Apply Code</button>
+                    </div>
+                    <div id="promoFeedback" class="promo-feedback"></div>
+                </div>
+
+                <!-- Program Cards Grid -->
+                <div class="program-grid" id="program-grid">
+                    <!-- Dynamic Program Cards loaded via Node.js API -->
+                    <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Fetching program data from Node.js server...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Program Tracks Breakdown & Curriculum -->
+        <section class="section alt-bg" id="curriculum">
+            <div class="container">
+                <div class="section-header center">
+                    <div class="section-tag">COMPREHENSIVE CURRICULUM</div>
+                    <h2 class="section-title">What You Will <span class="gradient-text">Build & Master</span></h2>
+                    <p class="section-desc">Industry-grade skills taught by active OfoniTech AI engineers and full-stack software architects.</p>
+                </div>
+
+                <div class="curriculum-tabs">
+                    <button class="tab-btn active" onclick="switchTrackTab('all')">All Modules</button>
+                    <button class="tab-btn" onclick="switchTrackTab('ai-video')">AI Video & Media</button>
+                    <button class="tab-btn" onclick="switchTrackTab('web-app')">Web & Mobile Dev</button>
+                    <button class="tab-btn" onclick="switchTrackTab('automation')">AI Automation (n8n/Make)</button>
+                </div>
+
+                <div class="module-grid" id="module-grid">
+                    <!-- Course Module 1 -->
+                    <div class="module-card" data-category="ai-video">
+                        <div class="module-icon"><i class="fa-solid fa-clapperboard"></i></div>
+                        <div class="module-tag">Track 1 & 2</div>
+                        <h3 class="module-title">AI Video Generation & Editing</h3>
+                        <p class="module-desc">Leverage cutting-edge generative video engines to produce broadcast-quality commercial videos, dynamic storyboards, and hyper-realistic AI avatars.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> Runway Gen-2 & Pika Labs Video Synthesis</li>
+                            <li><i class="fa-solid fa-check"></i> ElevenLabs Voice Cloning & Audio Design</li>
+                            <li><i class="fa-solid fa-check"></i> Midjourney v6 Prompt Engineering & Character Consistency</li>
+                            <li><i class="fa-solid fa-check"></i> CapCut Pro & Premiere Pro AI Workflows</li>
+                        </ul>
+                    </div>
+
+                    <!-- Course Module 2 -->
+                    <div class="module-card" data-category="web-app">
+                        <div class="module-icon"><i class="fa-solid fa-code"></i></div>
+                        <div class="module-tag">Track 1 & 2</div>
+                        <h3 class="module-title">Web Application Development</h3>
+                        <p class="module-desc">Build modern, responsive, and lightning-fast web applications. Learn HTML5, CSS3, modern JavaScript, component architectures, and API integrations.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> HTML5 Semantic Structure & Modern Layouts</li>
+                            <li><i class="fa-solid fa-check"></i> Responsive CSS Grid & Flexbox Designs</li>
+                            <li><i class="fa-solid fa-check"></i> Asynchronous JavaScript & RESTful API Consumption</li>
+                            <li><i class="fa-solid fa-check"></i> UI/UX Best Practices & Performance Optimization</li>
+                        </ul>
+                    </div>
+
+                    <!-- Course Module 3 -->
+                    <div class="module-card" data-category="web-app">
+                        <div class="module-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <div class="module-tag">Track 1 & 2</div>
+                        <h3 class="module-title">App Development Fundamentals</h3>
+                        <p class="module-desc">Engineer progressive web apps (PWAs) and cross-platform mobile solutions ready for deployment to app stores and cloud environments.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> Mobile First Interface & Touch Interactions</li>
+                            <li><i class="fa-solid fa-check"></i> Client-Side Storage & Offline Capability</li>
+                            <li><i class="fa-solid fa-check"></i> Mobile API Integrations & Push Notifications</li>
+                            <li><i class="fa-solid fa-check"></i> Production Build & Cloud Hosting (Vercel/Render)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Course Module 4 -->
+                    <div class="module-card highlight-card" data-category="automation">
+                        <div class="module-badge">EXCLUSIVE TO 6-MONTH TRACK</div>
+                        <div class="module-icon"><i class="fa-solid fa-cpu"></i></div>
+                        <div class="module-tag">Track 2 (Mastery)</div>
+                        <h3 class="module-title">AI Automation Systems (n8n, Make, Zapier)</h3>
+                        <p class="module-desc">Design autonomous enterprise automation pipelines. Connect CRM systems, AI LLMs, database webhooks, and automatic customer response bots.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> Self-Hosted n8n Workflow Automation Engine</li>
+                            <li><i class="fa-solid fa-check"></i> Make.com & Zapier Enterprise Integration</li>
+                            <li><i class="fa-solid fa-check"></i> Custom Node.js Webhook Receivers & Scripting</li>
+                            <li><i class="fa-solid fa-check"></i> OpenAI GPT-4o API Integration & Autonomous Agents</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hybrid Campus Hub Facilities Section -->
+        <section class="section" id="campus">
+            <div class="container">
+                <div class="campus-banner">
+                    <div class="campus-content">
+                        <div class="badge-pill light">CAMPUS HUB FEATURE</div>
+                        <h2 class="campus-title">Experience the Ultimate <span class="gradient-text">Hybrid Tech Campus</span></h2>
+                        <p class="campus-desc">
+                            Enrolling in our Hybrid format gives you 24/7 access to OfoniTech AI Academy's physical innovation hubs equipped for uninterrupted learning and collaborative building.
+                        </p>
+                        
+                        <div class="facility-features">
+                            <div class="facility-item">
+                                <div class="facility-icon"><i class="fa-solid fa-wifi"></i></div>
+                                <div>
+                                    <h4>High-Speed Starlink Fiber Internet</h4>
+                                    <p>Low-latency broadband for heavy video generation & cloud development.</p>
+                                </div>
+                            </div>
+                            <div class="facility-item">
+                                <div class="facility-icon"><i class="fa-solid fa-bolt"></i></div>
+                                <div>
+                                    <h4>24/7 Uninterrupted Power Grid</h4>
+                                    <p>Dual solar array + automatic generator fallback to ensure zero downtime.</p>
+                                </div>
+                            </div>
+                            <div class="facility-item">
+                                <div class="facility-icon"><i class="fa-solid fa-desktop"></i></div>
+                                <div>
+                                    <h4>Dedicated Tech Workstations</h4>
+                                    <p>Ergonomic desks, dual-monitor stations, and high-spec workstation PCs.</p>
+                                </div>
+                            </div>
+                            <div class="facility-item">
+                                <div class="facility-icon"><i class="fa-solid fa-users-gear"></i></div>
+                                <div>
+                                    <h4>In-Person Mentorship & Peer Labs</h4>
+                                    <p>Direct code reviews, hackathons, and networking with senior engineers.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQs Section -->
+        <section class="section alt-bg" id="faqs">
+            <div class="container">
+                <div class="section-header center">
+                    <div class="section-tag">GOT QUESTIONS?</div>
+                    <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+                    <p class="section-desc">Fetched directly from our Node.js FAQs database endpoint.</p>
+                </div>
+
+                <div class="faq-accordion" id="faq-accordion">
+                    <!-- Dynamic FAQs inserted via JavaScript fetching /api/faqs -->
+                    <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading FAQs...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact & Support Section -->
+        <section class="section" id="contact">
+            <div class="container">
+                <div class="contact-wrapper">
+                    <div class="contact-info">
+                        <div class="section-tag">GET IN TOUCH</div>
+                        <h2 class="section-title">Need Help Choosing <span class="gradient-text">A Program?</span></h2>
+                        <p class="section-desc">Our OfoniTech admissions advisors are online to guide your transition into AI engineering and tech.</p>
+
+                        <div class="contact-card-list">
+                            <div class="contact-card">
+                                <div class="c-icon"><i class="fa-solid fa-phone"></i></div>
+                                <div>
+                                    <div class="c-label">Call / WhatsApp Hotline</div>
+                                    <div class="c-val">+234 800 OFONI AI (0800 6366 48)</div>
+                                </div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="c-icon"><i class="fa-solid fa-envelope"></i></div>
+                                <div>
+                                    <div class="c-label">Admissions Email</div>
+                                    <div class="c-val">admissions@ofonitech.academy</div>
+                                </div>
+                            </div>
+                            <div class="contact-card">
+                                <div class="c-icon"><i class="fa-solid fa-location-dot"></i></div>
+                                <div>
+                                    <div class="c-label">Physical Campus Hub</div>
+                                    <div class="c-val">Lagos & Abuja Campus Hubs, Nigeria</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-form-card">
+                        <h3 class="form-title">Send Us a Message</h3>
+                        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                            <div class="form-group">
+                                <label for="c_name">Full Name *</label>
+                                <input type="text" id="c_name" required placeholder="e.g. Samuel Adebayo" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="c_email">Email Address *</label>
+                                <input type="email" id="c_email" required placeholder="name@example.com" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="c_subject">Subject</label>
+                                <input type="text" id="c_subject" placeholder="Admissions inquiry / Campus Visit" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="c_message">Message *</label>
+                                <textarea id="c_message" rows="4" required placeholder="Tell us how we can help you..." class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" id="contactSubmitBtn">
+                                <i class="fa-solid fa-paper-plane"></i> Send Message (via Node API)
+                            </button>
+                            <div id="contactStatus" class="form-status"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Live Enrollment & Node API Submission -->
+    <div class="modal-overlay" id="enrollModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeEnrollModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fa-solid fa-graduation-cap"></i> OfoniTech AI Academy Enrollment</h3>
+                <p class="modal-subtitle">Submit your details to secure your slot for the 2026 cohort.</p>
+            </div>
+
+            <form id="enrollmentForm" onsubmit="handleEnrollSubmit(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="m_name">Full Name *</label>
+                        <input type="text" id="m_name" required class="form-control" placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="m_email">Email Address *</label>
+                        <input type="email" id="m_email" required class="form-control" placeholder="john@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="m_phone">Phone Number (WhatsApp) *</label>
+                        <input type="tel" id="m_phone" required class="form-control" placeholder="+234 800 000 0000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="m_program">Select Program Track *</label>
+                        <select id="m_program" class="form-control" onchange="recalculateModalPrice()">
+                            <option value="3-month">3-Month Intensive Track (12 Weeks)</option>
+                            <option value="6-month" selected>6-Month Mastery Track (24 Weeks)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="m_mode">Learning Format *</label>
+                        <select id="m_mode" class="form-control" onchange="recalculateModalPrice()">
+                            <option value="online">Online Only</option>
+                            <option value="hybrid" selected>Hybrid (Online + Physical Hub Access)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="m_promo">Promo / Scholarship Code</label>
+                        <input type="text" id="m_promo" class="form-control" placeholder="Optional (e.g. OFONI2026)" onkeyup="recalculateModalPrice()">
+                    </div>
+                </div>
+
+                <!-- Dynamic Tuition Summary Box -->
+                <div class="tuition-summary-box">
+                    <div class="summary-row">
+                        <span>Base Tuition:</span>
+                        <span id="modalBasePrice" class="price-val">₦200,000</span>
+                    </div>
+                    <div class="summary-row discount" id="modalDiscountRow" style="display: none;">
+                        <span>Promo Discount:</span>
+                        <span id="modalDiscountPrice" class="price-val">-₦20,000</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row total">
+                        <span>Total Payable Tuition:</span>
+                        <span id="modalFinalPrice" class="total-price-val">₦200,000</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="m_payment">Payment Structure Option</label>
+                    <select id="m_payment" class="form-control">
+                        <option value="Full Payment">Full Single Payment (Best Value)</option>
+                        <option value="Installment (60% Deposit)">Flexible 2-Tranche Installment (60% Deposit)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="enrollSubmitBtn">
+                    <i class="fa-solid fa-lock"></i> Submit & Reserve Slot (Node.js API)
+                </button>
+            </form>
+
+            <div id="enrollmentResult" class="enrollment-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-logo">
+                        <div class="logo-icon"><i class="fa-solid fa-brain"></i></div>
+                        <div class="logo-text">OfoniTech <span>AI ACADEMY</span></div>
+                    </div>
+                    <p class="footer-desc">Empowering the next generation of software engineers, AI creators, and automation specialists across Africa and globally.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Programs</h4>
+                    <ul>
+                        <li><a href="#tuition">3-Month Intensive</a></li>
+                        <li><a href="#tuition">6-Month Mastery</a></li>
+                        <li><a href="#curriculum">AI Video Generation</a></li>
+                        <li><a href="#curriculum">Web & App Engineering</a></li>
+                        <li><a href="#curriculum">AI Automation (n8n/Make)</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Academy</h4>
+                    <ul>
+                        <li><a href="#campus">Physical Campus Hub</a></li>
+                        <li><a href="#faqs">Admissions FAQs</a></li>
+                        <li><a href="#contact">Contact Support</a></li>
+                        <li><a href="#">Verify Student Certificate</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Server Info</h4>
+                    <div class="server-status-card">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span> Node.js Server Active
+                        </div>
+                        <p class="server-detail">REST API Endpoints online on port 3000</p>
+                        <p class="server-detail">Environment: Production / Node.js 20+</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 OfoniTech AI Academy. All Rights Reserved. Built with Node.js & Express Architecture.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App JavaScript -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
