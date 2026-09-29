@@ -31,22 +31,31 @@
                 <div class="logo-text">OfoniTech <span>AI ACADEMY</span></div>
             </a>
 
+            <!-- Nav Links Drawer -->
             <nav class="nav-links" id="nav-links">
-                <a href="#programs" class="nav-link">Programs</a>
-                <a href="#tuition" class="nav-link">Tuition Matrix</a>
-                <a href="#curriculum" class="nav-link">Curriculum</a>
-                <a href="#campus" class="nav-link">Campus Hub</a>
-                <a href="#faqs" class="nav-link">FAQs</a>
-                <a href="#contact" class="nav-link">Contact</a>
+                <a href="#tuition" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-graduation-cap nav-mobile-icon"></i> Programs</a>
+                <a href="#tuition" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-calculator nav-mobile-icon"></i> Tuition Matrix</a>
+                <a href="#curriculum" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-book-open nav-mobile-icon"></i> Curriculum</a>
+                <a href="#campus" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-building-user nav-mobile-icon"></i> Campus Hub</a>
+                <a href="#faqs" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-circle-question nav-mobile-icon"></i> FAQs</a>
+                <a href="#contact" class="nav-link" onclick="closeMobileMenu()"><i class="fa-solid fa-envelope nav-mobile-icon"></i> Contact</a>
+
+                <!-- Actions inside Mobile Drawer -->
+                <div class="mobile-drawer-actions">
+                    <span class="node-badge"><i class="fa-brands fa-node-js"></i> Node.js Engine Active</span>
+                    <button class="btn btn-primary btn-block" onclick="closeMobileMenu(); openEnrollModal()">
+                        <i class="fa-solid fa-rocket"></i> Enroll Now
+                    </button>
+                </div>
             </nav>
 
             <div class="nav-actions">
-                <span class="node-badge" title="Powered by Node.js Server Architecture"><i class="fa-brands fa-node-js"></i> Node.js Engine</span>
-                <button class="btn btn-primary" onclick="openEnrollModal()">
+                <span class="node-badge desktop-only-badge" title="Powered by Node.js Server Architecture"><i class="fa-brands fa-node-js"></i> Node.js Engine</span>
+                <button class="btn btn-primary desktop-only-btn" onclick="openEnrollModal()">
                     <i class="fa-solid fa-rocket"></i> Enroll Now
                 </button>
-                <button class="mobile-toggle" id="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
-                    <i class="fa-solid fa-bars"></i>
+                <button class="mobile-toggle" id="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
+                    <i class="fa-solid fa-bars" id="toggle-icon"></i>
                 </button>
             </div>
         </div>

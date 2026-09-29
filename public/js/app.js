@@ -363,6 +363,40 @@ function scrollToCurriculum() {
 }
 
 function toggleMobileMenu() {
-    const links = document.getElementById('nav-links');
-    links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+    const navLinks = document.getElementById('nav-links');
+    const icon = document.getElementById('toggle-icon');
+    if (!navLinks) return;
+    
+    const isActive = navLinks.classList.contains('active');
+
+    if (isActive) {
+        closeMobileMenu();
+    } else {
+        navLinks.classList.add('active');
+        if (icon) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-xmark');
+        }
+    }
 }
+
+function closeMobileMenu() {
+    const navLinks = document.getElementById('nav-links');
+    const icon = document.getElementById('toggle-icon');
+    if (navLinks) {
+        navLinks.classList.remove('active');
+    }
+    if (icon) {
+        icon.classList.remove('fa-xmark');
+        icon.classList.add('fa-bars');
+    }
+}
+
+// Close mobile drawer when user clicks outside navbar
+document.addEventListener('click', (e) => {
+    const navbar = document.getElementById('navbar');
+    if (navbar && !navbar.contains(e.target)) {
+        closeMobileMenu();
+    }
+});
+
