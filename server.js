@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const supabase = require('./supabaseClient');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -153,7 +155,7 @@ app.post('/api/pricing/calculate', (req, res) => {
 });
 
 // 3. Process enrollment submission
-app.post('/api/enroll', (req, res) => {
+app.post('/api/enroll', async (req, res) => {
   const { fullName, email, phone, programId, learningMode, promoCode, paymentOption } = req.body;
 
   if (!fullName || !email || !phone || !programId || !learningMode) {
@@ -198,6 +200,35 @@ app.post('/api/enroll', (req, res) => {
 
   enrollmentsStore.push(enrollmentRecord);
 
+  // Sync with Supabase Database if configured
+  if (supabase) {
+    try {
+      const { data: dbData, error } = await supabase
+        .from('enrollments')
+        .insert([{
+          student_id: enrollmentId,
+          full_name: fullName,
+          email: email,
+          phone: phone,
+          program_id: programId,
+          program_title: program.title,
+          learning_mode: isHybrid ? 'Hybrid (Online + Campus Hub)' : 'Online Only',
+          tuition_amount: finalPrice,
+          payment_option: paymentOption || 'Full Payment',
+          promo_code: promoCode ? promoCode.trim().toUpperCase() : null,
+          status: 'Pending Payment Confirmation'
+        }]);
+
+      if (error) {
+        console.error('⚠️ Supabase Enrollment Insert Error:', error.message);
+      } else {
+        console.log(`✅ Enrollment ${enrollmentId} persisted to Supabase.`);
+      }
+    } catch (err) {
+      console.error('⚠️ Supabase Enrollment Error:', err.message);
+    }
+  }
+
   res.status(201).json({
     success: true,
     message: 'Enrollment submitted successfully! Welcome to OfoniTech AI Academy.',
@@ -206,7 +237,7 @@ app.post('/api/enroll', (req, res) => {
 });
 
 // 4. Contact / Inquiry Endpoint
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body;
 
   if (!name || !email || !message) {
@@ -227,6 +258,30 @@ app.post('/api/contact', (req, res) => {
   };
 
   contactStore.push(inquiry);
+
+  // Sync with Supabase Database if configured
+  if (supabase) {
+    try {
+      const { data: dbData, error } = await supabase
+        .from('contact_inquiries')
+        .insert([{
+          ticket_id: ticketId,
+          name: name,
+          email: email,
+          subject: subject || 'General Admission Inquiry',
+          message: message,
+          status: 'Open'
+        }]);
+
+      if (error) {
+        console.error('⚠️ Supabase Contact Insert Error:', error.message);
+      } else {
+        console.log(`✅ Inquiry ticket ${ticketId} persisted to Supabase.`);
+      }
+    } catch (err) {
+      console.error('⚠️ Supabase Contact Error:', err.message);
+    }
+  }
 
   res.status(201).json({
     success: true,
@@ -250,11 +305,26 @@ app.get('/api/faqs', (req, res) => {
 });
 
 // 6. Academy Stats
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', async (req, res) => {
+  let activeStudents = 450;
+  if (supabase) {
+    try {
+      const { count, error } = await supabase
+        .from('enrollments')
+        .select('*', { count: 'exact', head: true });
+
+      if (!error && count !== null) {
+        activeStudents += count;
+      }
+    } catch (err) {
+      console.error('⚠️ Supabase Stats Query Error:', err.message);
+    }
+  }
+
   res.json({
     success: true,
     stats: {
-      activeStudents: 450,
+      activeStudents,
       totalGraduates: 1520,
       employmentRate: '94.8%',
       hubsAvailable: 2,

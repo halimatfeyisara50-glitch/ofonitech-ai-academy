@@ -42,7 +42,6 @@
 
                 <!-- Actions inside Mobile Drawer -->
                 <div class="mobile-drawer-actions">
-                    <span class="node-badge"><i class="fa-brands fa-node-js"></i> Node.js Engine Active</span>
                     <button class="btn btn-primary btn-block" onclick="closeMobileMenu(); openEnrollModal()">
                         <i class="fa-solid fa-rocket"></i> Enroll Now
                     </button>
@@ -50,7 +49,6 @@
             </nav>
 
             <div class="nav-actions">
-                <span class="node-badge desktop-only-badge" title="Powered by Node.js Server Architecture"><i class="fa-brands fa-node-js"></i> Node.js Engine</span>
                 <button class="btn btn-primary desktop-only-btn" onclick="openEnrollModal()">
                     <i class="fa-solid fa-rocket"></i> Enroll Now
                 </button>
@@ -491,6 +489,10 @@
             </div>
         </div>
     </footer>
+
+    <!-- Supabase JS Client & Auth Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
 
     <!-- App JavaScript -->
     <script src="/js/app.js"></script>

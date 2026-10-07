@@ -275,6 +275,11 @@ async function handleEnrollSubmit(e) {
 
         const res = await response.json();
         if (res.success) {
+            // Persist directly to Supabase Database (if configured)
+            if (typeof saveEnrollmentToSupabase === 'function') {
+                saveEnrollmentToSupabase(res.data);
+            }
+
             document.getElementById('enrollmentForm').style.display = 'none';
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = `
@@ -328,6 +333,11 @@ async function handleContactSubmit(e) {
 
         const res = await response.json();
         if (res.success) {
+            // Persist to Supabase Database (if configured)
+            if (typeof saveContactToSupabase === 'function') {
+                saveContactToSupabase({ ticketId: res.ticketId, ...payload });
+            }
+
             status.style.color = '#4ADE80';
             status.textContent = `✅ ${res.message} (Reference Ticket: ${res.ticketId})`;
             document.getElementById('contactForm').reset();

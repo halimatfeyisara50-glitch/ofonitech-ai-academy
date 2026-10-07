@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AURA AI ACADEMY - DESIGN SYSTEM & STYLESHEET
+   OFONITECH AI ACADEMY - DESIGN SYSTEM & STYLESHEET
    Aesthetics: Premium Dark AI Mode, Glassmorphism, Ambient Glows, Modern Typography
    ========================================================================== */
 
@@ -1338,6 +1338,7 @@ input:checked + .slider:before {
     .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 
+
 @media (max-width: 768px) {
     .hero-title { font-size: 2.2rem; }
     .stats-bar { flex-direction: column; gap: 1.5rem; }
@@ -1346,4 +1347,7 @@ input:checked + .slider:before {
     .footer-grid { grid-template-columns: 1fr; }
     .mode-switcher-container { flex-direction: column; gap: 0.8rem; border-radius: var(--radius-md); }
 }
+
+
+
 
