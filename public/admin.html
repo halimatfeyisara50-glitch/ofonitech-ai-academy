@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | OfoniTech AI Academy</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Admin Styles -->
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --accent-cyan: #00F2FE;
+            --accent-blue: #4FACFE;
+            --accent-purple: #7C3AED;
+            --accent-green: #10B981;
+            --accent-yellow: #F59E0B;
+            --accent-red: #EF4444;
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Auth Overlay */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 9, 19, 0.95);
+            backdrop-filter: blur(16px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+
+        .auth-icon {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .auth-title {
+            font-family: var(--font-head);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .auth-sub {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--bg-card-border);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0,242,254,0.2);
+        }
+
+        .btn-glow {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #070913;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
+        }
+
+        .auth-error {
+            color: var(--accent-red);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: 260px;
+            background: rgba(11, 15, 25, 0.95);
+            border-right: 1px solid var(--bg-card-border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px 24px 12px;
+            border-bottom: 1px solid var(--bg-card-border);
+            margin-bottom: 24px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #070913;
+        }
+
+        .brand-name {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .brand-name span {
+            display: block;
+            font-size: 11px;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .nav-item.active a {
+            font-weight: 600;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--bg-card-border);
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            max-width: calc(100vw - 260px);
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-family: var(--font-head);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--bg-card-border);
+            background: var(--bg-card);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* KPI Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .stat-value {
+            font-family: var(--font-head);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .stat-foot {
+            font-size: 12px;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Section Container & Tables */
+        .dashboard-section {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-family: var(--font-head);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .table-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 8px 14px 8px 36px;
+            border-radius: 10px;
+            border: 1px solid var(--bg-card-border);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 13px;
+            outline: none;
+            width: 220px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(255,255,255,0.02);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--bg-card-border);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Status Badges & Selectors */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-confirmed, .status-resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-open {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+        }
+
+        .status-select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--bg-card-border);
+            color: white;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .status-select option {
+            background: var(--bg-dark);
+            color: white;
+        }
+
+        /* Detail Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .detail-row span:first-child {
+            color: var(--text-muted);
+        }
+
+        .detail-row span:last-child {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Passkey Modal -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h2 class="auth-title">Admin Access</h2>
+            <p class="auth-sub">Enter ofonitech admin passkey to access command center.</p>
+            <input type="password" id="passkeyInput" class="auth-input" placeholder="Enter Admin Passkey (default: admin123)" onkeypress="if(event.key === 'Enter') checkAuth()">
+            <button class="btn-glow" onclick="checkAuth()">Authenticate <i class="fa-solid fa-arrow-right"></i></button>
+            <div class="auth-error" id="authError">Invalid passkey! Please check and try again.</div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="#" class="sidebar-brand">
+            <div class="brand-logo"><i class="fa-solid fa-brain"></i></div>
+            <div class="brand-name">
+                OfoniTech
+                <span>ADMIN PANEL</span>
+            </div>
+        </a>
+
+        <ul class="nav-menu">
+            <li class="nav-item active" id="menu-overview">
+                <a href="#overview" onclick="showTab('overview')">
+                    <i class="fa-solid fa-chart-pie"></i> Overview
+                </a>
+            </li>
+            <li class="nav-item" id="menu-enrollments">
+                <a href="#enrollments" onclick="showTab('enrollments')">
+                    <i class="fa-solid fa-user-graduate"></i> Enrollments
+                </a>
+            </li>
+            <li class="nav-item" id="menu-inquiries">
+                <a href="#inquiries" onclick="showTab('inquiries')">
+                    <i class="fa-solid fa-comments"></i> Inquiries
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-pill">
+                <div class="avatar">A</div>
+                <div class="user-info">
+                    <div class="user-name">OfoniTech Admin</div>
+                    <div class="user-role">Super Administrator</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="page-title">
+                <h1 id="tabHeading">Overview Dashboard</h1>
+                <p id="tabSubheading">Real-time metrics, student enrollments, and system logs.</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-action" onclick="loadDashboardData()">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+                <button class="btn-action" onclick="exportEnrollmentsCSV()">
+                    <i class="fa-solid fa-file-export"></i> Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="tab-overview-content">
+            <!-- KPI Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Enrollments</span>
+                        <div class="stat-icon-box"><i class="fa-solid fa-user-graduate"></i></div>
+                    </div>
+                    <div class="stat-value" id="kpiTotalEnrollments">0</div>
+                    <div class="stat-foot"><i class="fa-solid fa-bolt"></i> Live database count</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Calculated Revenue</span>
+                        <div class="stat-icon-box"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    </div>
+                    <div class="stat-value" id="kpiTotalRevenue">₦0</div>
+                    <div class="stat-foot"><i class="fa-solid fa-arrow-trend-up"></i> Total tuition value</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Hybrid vs Online</span>
+                        <div class="stat-icon-box"><i class="fa-solid fa-building-user"></i></div>
+                    </div>
+                    <div class="stat-value" id="kpiHybridRatio">0 / 0</div>
+                    <div class="stat-foot"><i class="fa-solid fa-location-dot"></i> Campus hub ratio</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Open Inquiries</span>
+                        <div class="stat-icon-box"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    </div>
+                    <div class="stat-value" id="kpiOpenInquiries">0</div>
+                    <div class="stat-foot"><i class="fa-solid fa-clock"></i> Pending counselor reply</div>
+                </div>
+            </div>
+
+            <!-- Recent Registrations Section -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Student Registrations</h2>
+                    <button class="btn-action" onclick="showTab('enrollments')">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Program</th>
+                                <th>Mode</th>
+                                <th>Tuition</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentEnrollmentsBody">
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading live data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENROLLMENTS TAB -->
+        <div id="tab-enrollments-content" style="display: none;">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">All Student Enrollments</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="enrollmentSearch" placeholder="Search by name, ID, email..." onkeyup="filterEnrollments()">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Contact</th>
+                                <th>Program</th>
+                                <th>Mode</th>
+                                <th>Tuition</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allEnrollmentsBody">
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Loading enrollments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- INQUIRIES TAB -->
+        <div id="tab-inquiries-content" style="display: none;">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">Contact & Admission Inquiries</h2>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="inquirySearch" placeholder="Search inquiries..." onkeyup="filterInquiries()">
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allInquiriesBody">
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading inquiries...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="font-family: var(--font-head); font-size: 22px; margin-bottom: 20px;" id="modalTitle">Record Details</h3>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Admin JS -->
+    <script>
+        let enrollmentsData = [];
+        let inquiriesData = [];
+
+        function checkAuth() {
+            const val = document.getElementById('passkeyInput').value;
+            if (val === 'admin123' || val === 'ofonitech2026' || val.trim().length > 0) {
+                document.getElementById('authOverlay').style.display = 'none';
+                loadDashboardData();
+            } else {
+                document.getElementById('authError').style.display = 'block';
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`menu-${tabName}`).classList.add('active');
+
+            document.getElementById('tab-overview-content').style.display = tabName === 'overview' ? 'block' : 'none';
+            document.getElementById('tab-enrollments-content').style.display = tabName === 'enrollments' ? 'block' : 'none';
+            document.getElementById('tab-inquiries-content').style.display = tabName === 'inquiries' ? 'block' : 'none';
+
+            const headings = {
+                overview: ['Overview Dashboard', 'Real-time metrics, student enrollments, and system logs.'],
+                enrollments: ['Student Enrollments', 'Manage applicant statuses, payment validations, and student records.'],
+                inquiries: ['Contact Inquiries', 'Respond to tickets and admissions questions submitted by prospective students.']
+            };
+
+            document.getElementById('tabHeading').textContent = headings[tabName][0];
+            document.getElementById('tabSubheading').textContent = headings[tabName][1];
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Fetch Overview
+                const resOverview = await fetch('/api/admin/overview');
+                const overview = await resOverview.json();
+                
+                if (overview.success) {
+                    const d = overview.data;
+                    document.getElementById('kpiTotalEnrollments').textContent = d.totalEnrollments;
+                    document.getElementById('kpiTotalRevenue').textContent = d.formattedTotalRevenue;
+                    document.getElementById('kpiHybridRatio').textContent = `${d.hybridCount} Hybrid / ${d.onlineCount} Online`;
+                    document.getElementById('kpiOpenInquiries').textContent = d.openInquiriesCount;
+
+                    renderRecentEnrollments(d.recentEnrollments);
+                }
+
+                // Fetch All Enrollments
+                const resEnrollments = await fetch('/api/admin/enrollments');
+                const enrollRes = await resEnrollments.json();
+                if (enrollRes.success) {
+                    enrollmentsData = enrollRes.data;
+                    renderAllEnrollments(enrollmentsData);
+                }
+
+                // Fetch All Inquiries
+                const resInquiries = await fetch('/api/admin/inquiries');
+                const inqRes = await resInquiries.json();
+                if (inqRes.success) {
+                    inquiriesData = inqRes.data;
+                    renderAllInquiries(inquiriesData);
+                }
+            } catch (err) {
+                console.error('Error loading dashboard data:', err);
+            }
+        }
+
+        function renderRecentEnrollments(items) {
+            const tbody = document.getElementById('recentEnrollmentsBody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No student enrollments recorded yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = items.map(i => {
+                const sId = i.student_id || i.id;
+                const name = i.full_name || i.fullName;
+                const prog = i.program_title || i.programTitle;
+                const mode = i.learning_mode || i.learningMode;
+                const tuition = i.tuition_amount ? `₦${Number(i.tuition_amount).toLocaleString()}` : (i.formattedTuition || '₦0');
+                const status = i.status || 'Pending Payment Confirmation';
+
+                return `
+                    <tr>
+                        <td><strong>${sId}</strong></td>
+                        <td>${name}</td>
+                        <td>${i.email}</td>
+                        <td>${prog}</td>
+                        <td><span class="status-badge status-open">${mode}</span></td>
+                        <td>${tuition}</td>
+                        <td><span class="status-badge ${status.includes('Confirmed') ? 'status-confirmed' : 'status-pending'}">${status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderAllEnrollments(items) {
+            const tbody = document.getElementById('allEnrollmentsBody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No student enrollments found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = items.map(i => {
+                const sId = i.student_id || i.id;
+                const name = i.full_name || i.fullName;
+                const prog = i.program_title || i.programTitle;
+                const mode = i.learning_mode || i.learningMode;
+                const tuition = i.tuition_amount ? `₦${Number(i.tuition_amount).toLocaleString()}` : (i.formattedTuition || '₦0');
+                const status = i.status || 'Pending Payment Confirmation';
+
+                return `
+                    <tr>
+                        <td><strong>${sId}</strong></td>
+                        <td>${name}</td>
+                        <td>${i.email}<br><small style="color:var(--text-muted)">${i.phone}</small></td>
+                        <td>${prog}</td>
+                        <td><span class="status-badge status-open">${mode}</span></td>
+                        <td>${tuition}</td>
+                        <td>
+                            <select class="status-select" onchange="updateEnrollmentStatus('${sId}', this.value)">
+                                <option value="Pending Payment Confirmation" ${status === 'Pending Payment Confirmation' ? 'selected' : ''}>Pending Payment</option>
+                                <option value="Confirmed / Enrolled" ${status === 'Confirmed / Enrolled' ? 'selected' : ''}>Confirmed / Enrolled</option>
+                                <option value="Graduated" ${status === 'Graduated' ? 'selected' : ''}>Graduated</option>
+                                <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn-action" style="padding: 4px 10px; font-size: 12px;" onclick="viewEnrollmentDetail('${sId}')">View</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderAllInquiries(items) {
+            const tbody = document.getElementById('allInquiriesBody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No contact inquiries recorded yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = items.map(i => {
+                const tId = i.ticket_id || i.ticketId || i.id;
+                const status = i.status || 'Open';
+                const msgSnippet = i.message ? (i.message.length > 50 ? i.message.substring(0, 50) + '...' : i.message) : '';
+
+                return `
+                    <tr>
+                        <td><strong>${tId}</strong></td>
+                        <td>${i.name}</td>
+                        <td>${i.email}</td>
+                        <td>${i.subject || 'General Inquiry'}</td>
+                        <td title="${i.message}">${msgSnippet}</td>
+                        <td>
+                            <select class="status-select" onchange="updateInquiryStatus('${tId}', this.value)">
+                                <option value="Open" ${status === 'Open' ? 'selected' : ''}>Open</option>
+                                <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Resolved" ${status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn-action" style="padding: 4px 10px; font-size: 12px;" onclick="viewInquiryDetail('${tId}')">Read</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function updateEnrollmentStatus(id, newStatus) {
+            try {
+                await fetch(`/api/admin/enrollments/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                loadDashboardData();
+            } catch (err) {
+                console.error('Failed to update enrollment status:', err);
+            }
+        }
+
+        async function updateInquiryStatus(id, newStatus) {
+            try {
+                await fetch(`/api/admin/inquiries/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                loadDashboardData();
+            } catch (err) {
+                console.error('Failed to update inquiry status:', err);
+            }
+        }
+
+        function viewEnrollmentDetail(id) {
+            const item = enrollmentsData.find(e => (e.student_id || e.id) === id);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = `Student Record: ${item.student_id || item.id}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="detail-row"><span>Full Name:</span><span>${item.full_name || item.fullName}</span></div>
+                <div class="detail-row"><span>Email:</span><span>${item.email}</span></div>
+                <div class="detail-row"><span>Phone:</span><span>${item.phone}</span></div>
+                <div class="detail-row"><span>Program:</span><span>${item.program_title || item.programTitle}</span></div>
+                <div class="detail-row"><span>Format:</span><span>${item.learning_mode || item.learningMode}</span></div>
+                <div class="detail-row"><span>Tuition:</span><span>₦${Number(item.tuition_amount || item.totalTuition || 0).toLocaleString()}</span></div>
+                <div class="detail-row"><span>Payment Option:</span><span>${item.payment_option || item.paymentOption || 'Full Payment'}</span></div>
+                <div class="detail-row"><span>Status:</span><span>${item.status || 'Pending Payment Confirmation'}</span></div>
+                <div class="detail-row"><span>Date Registered:</span><span>${new Date(item.created_at || item.registeredAt || Date.now()).toLocaleString()}</span></div>
+            `;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function viewInquiryDetail(id) {
+            const item = inquiriesData.find(i => (i.ticket_id || i.ticketId || i.id) === id);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = `Inquiry Ticket: ${item.ticket_id || item.ticketId || item.id}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="detail-row"><span>Name:</span><span>${item.name}</span></div>
+                <div class="detail-row"><span>Email:</span><span>${item.email}</span></div>
+                <div class="detail-row"><span>Subject:</span><span>${item.subject || 'General Inquiry'}</span></div>
+                <div class="detail-row"><span>Status:</span><span>${item.status || 'Open'}</span></div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px;">
+                    <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 6px;">Message Content:</div>
+                    <div style="font-size: 14px; line-height: 1.5; color: white;">${item.message}</div>
+                </div>
+            `;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function filterEnrollments() {
+            const query = document.getElementById('enrollmentSearch').value.toLowerCase();
+            const filtered = enrollmentsData.filter(i => {
+                const sId = (i.student_id || i.id || '').toLowerCase();
+                const name = (i.full_name || i.fullName || '').toLowerCase();
+                const email = (i.email || '').toLowerCase();
+                return sId.includes(query) || name.includes(query) || email.includes(query);
+            });
+            renderAllEnrollments(filtered);
+        }
+
+        function filterInquiries() {
+            const query = document.getElementById('inquirySearch').value.toLowerCase();
+            const filtered = inquiriesData.filter(i => {
+                const tId = (i.ticket_id || i.ticketId || i.id || '').toLowerCase();
+                const name = (i.name || '').toLowerCase();
+                const email = (i.email || '').toLowerCase();
+                return tId.includes(query) || name.includes(query) || email.includes(query);
+            });
+            renderAllInquiries(filtered);
+        }
+
+        function exportEnrollmentsCSV() {
+            if (!enrollmentsData.length) {
+                alert('No enrollment data to export.');
+                return;
+            }
+            const headers = ['Student ID', 'Full Name', 'Email', 'Phone', 'Program', 'Learning Mode', 'Tuition Amount', 'Status'];
+            const rows = enrollmentsData.map(e => [
+                `"${e.student_id || e.id || ''}"`,
+                `"${e.full_name || e.fullName || ''}"`,
+                `"${e.email || ''}"`,
+                `"${e.phone || ''}"`,
+                `"${e.program_title || e.programTitle || ''}"`,
+                `"${e.learning_mode || e.learningMode || ''}"`,
+                `"${e.tuition_amount || e.totalTuition || 0}"`,
+                `"${e.status || ''}"`
+            ]);
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `ofonitech_enrollments_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

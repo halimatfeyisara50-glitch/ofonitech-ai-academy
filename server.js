@@ -333,6 +333,150 @@ app.get('/api/stats', async (req, res) => {
   });
 });
 
+// -------------------------------------------------------------
+// ADMIN DASHBOARD API ENDPOINTS
+// -------------------------------------------------------------
+
+// Admin Overview Metrics
+app.get('/api/admin/overview', async (req, res) => {
+  let enrollments = enrollmentsStore;
+  let inquiries = contactStore;
+
+  if (supabase) {
+    try {
+      const { data: dbEnrollments } = await supabase.from('enrollments').select('*').order('created_at', { ascending: false });
+      const { data: dbInquiries } = await supabase.from('contact_inquiries').select('*').order('created_at', { ascending: false });
+      
+      if (dbEnrollments) enrollments = dbEnrollments;
+      if (dbInquiries) inquiries = dbInquiries;
+    } catch (err) {
+      console.error('Admin Overview Supabase error:', err.message);
+    }
+  }
+
+  const totalEnrollments = enrollments.length;
+  const totalRevenue = enrollments.reduce((acc, curr) => acc + Number(curr.tuition_amount || curr.totalTuition || 0), 0);
+  const hybridCount = enrollments.filter(e => String(e.learning_mode || e.learningMode || '').toLowerCase().includes('hybrid')).length;
+  const onlineCount = totalEnrollments - hybridCount;
+  const pendingCount = enrollments.filter(e => String(e.status || '').toLowerCase().includes('pending')).length;
+  const confirmedCount = enrollments.filter(e => String(e.status || '').toLowerCase().includes('confirmed') || String(e.status || '').toLowerCase().includes('active') || String(e.status || '').toLowerCase().includes('enrolled')).length;
+  const openInquiriesCount = inquiries.filter(i => String(i.status || 'open').toLowerCase() === 'open').length;
+
+  res.json({
+    success: true,
+    data: {
+      totalEnrollments,
+      totalRevenue,
+      formattedTotalRevenue: `₦${totalRevenue.toLocaleString()}`,
+      hybridCount,
+      onlineCount,
+      pendingCount,
+      confirmedCount,
+      totalInquiries: inquiries.length,
+      openInquiriesCount,
+      recentEnrollments: enrollments.slice(0, 5),
+      recentInquiries: inquiries.slice(0, 5)
+    }
+  });
+});
+
+// Admin Get Enrollments
+app.get('/api/admin/enrollments', async (req, res) => {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('enrollments').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        return res.json({ success: true, count: data.length, data });
+      }
+    } catch (err) {
+      console.error('Admin Enrollments fetch error:', err.message);
+    }
+  }
+
+  res.json({ success: true, count: enrollmentsStore.length, data: enrollmentsStore });
+});
+
+// Admin Update Enrollment Status
+app.patch('/api/admin/enrollments/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ success: false, message: 'Status field is required.' });
+  }
+
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from('enrollments')
+        .update({ status })
+        .or(`id.eq.${id},student_id.eq.${id}`);
+
+      if (error) console.error('Supabase update enrollment status error:', error.message);
+    } catch (err) {
+      console.error('Supabase status error:', err.message);
+    }
+  }
+
+  const localItem = enrollmentsStore.find(e => e.id === id || e.student_id === id);
+  if (localItem) {
+    localItem.status = status;
+  }
+
+  res.json({ success: true, message: `Enrollment status updated to ${status}.` });
+});
+
+// Admin Get Contact Inquiries
+app.get('/api/admin/inquiries', async (req, res) => {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from('contact_inquiries').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        return res.json({ success: true, count: data.length, data });
+      }
+    } catch (err) {
+      console.error('Admin Inquiries fetch error:', err.message);
+    }
+  }
+
+  res.json({ success: true, count: contactStore.length, data: contactStore });
+});
+
+// Admin Update Inquiry Status
+app.patch('/api/admin/inquiries/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ success: false, message: 'Status field is required.' });
+  }
+
+  if (supabase) {
+    try {
+      const { error } = await supabase
+        .from('contact_inquiries')
+        .update({ status })
+        .or(`id.eq.${id},ticket_id.eq.${id}`);
+
+      if (error) console.error('Supabase update inquiry error:', error.message);
+    } catch (err) {
+      console.error('Supabase inquiry status error:', err.message);
+    }
+  }
+
+  const localItem = contactStore.find(i => i.id === id || i.ticketId === id || i.ticket_id === id);
+  if (localItem) {
+    localItem.status = status;
+  }
+
+  res.json({ success: true, message: `Inquiry status updated to ${status}.` });
+});
+
+// Admin Dashboard UI Route
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 // Serve frontend SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
