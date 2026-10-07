@@ -203,9 +203,6 @@ function openEnrollModal(programId = '6-month') {
     if (select) select.value = programId;
     
     document.getElementById('m_mode').value = state.selectedMode;
-    if (state.appliedPromo) {
-        document.getElementById('m_promo').value = state.appliedPromo.code;
-    }
 
     modal.classList.add('active');
     recalculateModalPrice();
@@ -220,7 +217,7 @@ function closeEnrollModal() {
 async function recalculateModalPrice() {
     const programId = document.getElementById('m_program').value;
     const mode = document.getElementById('m_mode').value;
-    const promoCode = document.getElementById('m_promo').value;
+    const promoCode = document.getElementById('m_promo') ? document.getElementById('m_promo').value : '';
 
     try {
         const response = await fetch('/api/pricing/calculate', {
@@ -235,11 +232,13 @@ async function recalculateModalPrice() {
             document.getElementById('modalFinalPrice').textContent = d.formattedFinalPrice;
 
             const discountRow = document.getElementById('modalDiscountRow');
-            if (d.discountAmount > 0) {
-                discountRow.style.display = 'flex';
-                document.getElementById('modalDiscountPrice').textContent = `-${d.symbol}${d.discountAmount.toLocaleString()}`;
-            } else {
-                discountRow.style.display = 'none';
+            if (discountRow) {
+                if (d.discountAmount > 0) {
+                    discountRow.style.display = 'flex';
+                    document.getElementById('modalDiscountPrice').textContent = `-${d.symbol}${d.discountAmount.toLocaleString()}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
             }
         }
     } catch (err) {
@@ -262,7 +261,7 @@ async function handleEnrollSubmit(e) {
         phone: document.getElementById('m_phone').value,
         programId: document.getElementById('m_program').value,
         learningMode: document.getElementById('m_mode').value,
-        promoCode: document.getElementById('m_promo').value,
+        promoCode: document.getElementById('m_promo') ? document.getElementById('m_promo').value : null,
         paymentOption: document.getElementById('m_payment').value
     };
 
