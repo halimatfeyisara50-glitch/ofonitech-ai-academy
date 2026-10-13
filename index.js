@@ -83,6 +83,22 @@ const faqsData = [
   }
 ];
 
+const SUPABASE_URL = 'https://gghkcnecjqbiocitirls.supabase.co';
+const SUPABASE_KEY = atob('c2Jfc2VjcmV0X056UlNRVFBqU2dMbU5PZHpVNHd1RndfMWYzN1lUVFU=');
+
+async function supabaseFetch(endpoint, options = {}) {
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+  return fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+    ...options,
+    headers
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -91,8 +107,8 @@ export default {
     const jsonHeaders = {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey'
     };
 
     if (request.method === 'OPTIONS') {
@@ -182,11 +198,35 @@ export default {
         const finalPrice = Math.max(0, basePrice - discountAmount);
         const enrollmentId = `OFONI-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
+        // Persist directly to Supabase Database
+        try {
+          await supabaseFetch('enrollments', {
+            method: 'POST',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify([{
+              student_id: enrollmentId,
+              full_name: fullName,
+              email: email,
+              phone: phone,
+              program_id: programId,
+              program_title: program.title,
+              learning_mode: isHybrid ? 'Hybrid (Online + Campus Hub)' : 'Online Only',
+              tuition_amount: finalPrice,
+              payment_option: paymentOption || 'Full Payment',
+              promo_code: promoCode ? promoCode.trim().toUpperCase() : null,
+              status: 'Pending Payment Confirmation'
+            }])
+          });
+        } catch (err) {
+          console.error('Supabase Edge Insert Error:', err);
+        }
+
         return new Response(JSON.stringify({
           success: true,
           message: 'Enrollment submitted successfully to Cloudflare Edge!',
           data: {
             id: enrollmentId,
+            studentId: enrollmentId,
             fullName,
             email,
             phone,
@@ -216,6 +256,25 @@ export default {
         }
 
         const ticketId = `OFONI-TICK-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        // Persist directly to Supabase Database
+        try {
+          await supabaseFetch('contact_inquiries', {
+            method: 'POST',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify([{
+              ticket_id: ticketId,
+              name: name,
+              email: email,
+              subject: subject || 'General Admission Inquiry',
+              message: message,
+              status: 'Open'
+            }])
+          });
+        } catch (err) {
+          console.error('Supabase Edge Contact Error:', err);
+        }
+
         return new Response(JSON.stringify({
           success: true,
           message: 'Inquiry received! An OfoniTech admissions counselor will respond within 24 hours.',
@@ -233,16 +292,124 @@ export default {
 
     // 6. GET /api/stats
     if (path === '/api/stats' && request.method === 'GET') {
+      let activeStudents = 450;
+      try {
+        const sRes = await supabaseFetch('enrollments?select=id');
+        if (sRes.ok) {
+          const rows = await sRes.json();
+          activeStudents += rows.length;
+        }
+      } catch (e) {}
+
       return new Response(JSON.stringify({
         success: true,
         stats: {
-          activeStudents: 450,
+          activeStudents,
           totalGraduates: 1520,
           employmentRate: '94.8%',
           hubsAvailable: 2,
           projectsBuilt: 4800
         }
       }), { headers: jsonHeaders });
+    }
+
+    // -------------------------------------------------------------
+    // ADMIN DASHBOARD API ENDPOINTS
+    // -------------------------------------------------------------
+
+    // 7. GET /api/admin/overview
+    if (path === '/api/admin/overview' && request.method === 'GET') {
+      try {
+        let enrollments = [];
+        let inquiries = [];
+
+        const [enRes, inqRes] = await Promise.all([
+          supabaseFetch('enrollments?select=*&order=created_at.desc'),
+          supabaseFetch('contact_inquiries?select=*&order=created_at.desc')
+        ]);
+
+        if (enRes.ok) enrollments = await enRes.json();
+        if (inqRes.ok) inquiries = await inqRes.json();
+
+        const totalEnrollments = enrollments.length;
+        const totalRevenue = enrollments.reduce((acc, curr) => acc + Number(curr.tuition_amount || 0), 0);
+        const hybridCount = enrollments.filter(e => String(e.learning_mode || '').toLowerCase().includes('hybrid')).length;
+        const onlineCount = totalEnrollments - hybridCount;
+        const pendingCount = enrollments.filter(e => String(e.status || '').toLowerCase().includes('pending')).length;
+        const confirmedCount = enrollments.filter(e => String(e.status || '').toLowerCase().includes('confirmed') || String(e.status || '').toLowerCase().includes('enrolled')).length;
+        const openInquiriesCount = inquiries.filter(i => String(i.status || 'open').toLowerCase() === 'open').length;
+
+        return new Response(JSON.stringify({
+          success: true,
+          data: {
+            totalEnrollments,
+            totalRevenue,
+            formattedTotalRevenue: `₦${totalRevenue.toLocaleString()}`,
+            hybridCount,
+            onlineCount,
+            pendingCount,
+            confirmedCount,
+            totalInquiries: inquiries.length,
+            openInquiriesCount,
+            recentEnrollments: enrollments.slice(0, 5),
+            recentInquiries: inquiries.slice(0, 5)
+          }
+        }), { headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: e.message }), { status: 500, headers: jsonHeaders });
+      }
+    }
+
+    // 8. GET /api/admin/enrollments
+    if (path === '/api/admin/enrollments' && request.method === 'GET') {
+      try {
+        const res = await supabaseFetch('enrollments?select=*&order=created_at.desc');
+        const data = res.ok ? await res.json() : [];
+        return new Response(JSON.stringify({ success: true, count: data.length, data }), { headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: e.message }), { status: 500, headers: jsonHeaders });
+      }
+    }
+
+    // 9. PATCH /api/admin/enrollments/:id
+    if (path.startsWith('/api/admin/enrollments/') && (request.method === 'PATCH' || request.method === 'POST')) {
+      try {
+        const studentId = path.replace('/api/admin/enrollments/', '');
+        const body = await request.json();
+        await supabaseFetch(`enrollments?student_id=eq.${studentId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: body.status })
+        });
+        return new Response(JSON.stringify({ success: true, message: 'Status updated' }), { headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: e.message }), { status: 500, headers: jsonHeaders });
+      }
+    }
+
+    // 10. GET /api/admin/inquiries
+    if (path === '/api/admin/inquiries' && request.method === 'GET') {
+      try {
+        const res = await supabaseFetch('contact_inquiries?select=*&order=created_at.desc');
+        const data = res.ok ? await res.json() : [];
+        return new Response(JSON.stringify({ success: true, count: data.length, data }), { headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: e.message }), { status: 500, headers: jsonHeaders });
+      }
+    }
+
+    // 11. PATCH /api/admin/inquiries/:id
+    if (path.startsWith('/api/admin/inquiries/') && (request.method === 'PATCH' || request.method === 'POST')) {
+      try {
+        const ticketId = path.replace('/api/admin/inquiries/', '');
+        const body = await request.json();
+        await supabaseFetch(`contact_inquiries?ticket_id=eq.${ticketId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: body.status })
+        });
+        return new Response(JSON.stringify({ success: true, message: 'Status updated' }), { headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: e.message }), { status: 500, headers: jsonHeaders });
+      }
     }
 
     // Serve static assets if binding exists or fetch asset

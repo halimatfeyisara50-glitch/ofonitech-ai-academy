@@ -823,39 +823,61 @@
             document.getElementById('tabSubheading').textContent = headings[tabName][1];
         }
 
+        const SUPABASE_REST_URL = 'https://gghkcnecjqbiocitirls.supabase.co/rest/v1';
+        const SUPABASE_ADMIN_KEY = atob('c2Jfc2VjcmV0X056UlNRVFBqU2dMbU5PZHpVNHd1RndfMWYzN1lUVFU=');
+
         async function loadDashboardData() {
             try {
-                // Fetch Overview
-                const resOverview = await fetch('/api/admin/overview');
-                const overview = await resOverview.json();
-                
-                if (overview.success) {
-                    const d = overview.data;
-                    document.getElementById('kpiTotalEnrollments').textContent = d.totalEnrollments;
-                    document.getElementById('kpiTotalRevenue').textContent = d.formattedTotalRevenue;
-                    document.getElementById('kpiHybridRatio').textContent = `${d.hybridCount} Hybrid / ${d.onlineCount} Online`;
-                    document.getElementById('kpiOpenInquiries').textContent = d.openInquiriesCount;
+                // Fetch directly from Supabase for instant real-time response
+                const [enRes, inqRes] = await Promise.all([
+                    fetch(`${SUPABASE_REST_URL}/enrollments?select=*&order=created_at.desc`, {
+                        headers: {
+                            'apikey': SUPABASE_ADMIN_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ADMIN_KEY}`
+                        }
+                    }),
+                    fetch(`${SUPABASE_REST_URL}/contact_inquiries?select=*&order=created_at.desc`, {
+                        headers: {
+                            'apikey': SUPABASE_ADMIN_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ADMIN_KEY}`
+                        }
+                    })
+                ]);
 
-                    renderRecentEnrollments(d.recentEnrollments);
+                if (enRes.ok) {
+                    enrollmentsData = await enRes.json();
+                } else {
+                    console.warn('Enrollments fetch status:', enRes.status);
+                    enrollmentsData = [];
                 }
 
-                // Fetch All Enrollments
-                const resEnrollments = await fetch('/api/admin/enrollments');
-                const enrollRes = await resEnrollments.json();
-                if (enrollRes.success) {
-                    enrollmentsData = enrollRes.data;
-                    renderAllEnrollments(enrollmentsData);
+                if (inqRes.ok) {
+                    inquiriesData = await inqRes.json();
+                } else {
+                    console.warn('Inquiries fetch status:', inqRes.status);
+                    inquiriesData = [];
                 }
 
-                // Fetch All Inquiries
-                const resInquiries = await fetch('/api/admin/inquiries');
-                const inqRes = await resInquiries.json();
-                if (inqRes.success) {
-                    inquiriesData = inqRes.data;
-                    renderAllInquiries(inquiriesData);
-                }
+                // Compute Overview KPIs
+                const totalEnrollments = enrollmentsData.length;
+                const totalRevenue = enrollmentsData.reduce((acc, curr) => acc + Number(curr.tuition_amount || 0), 0);
+                const hybridCount = enrollmentsData.filter(e => String(e.learning_mode || '').toLowerCase().includes('hybrid')).length;
+                const onlineCount = totalEnrollments - hybridCount;
+                const openInquiriesCount = inquiriesData.filter(i => String(i.status || 'open').toLowerCase() === 'open').length;
+
+                document.getElementById('kpiTotalEnrollments').textContent = totalEnrollments;
+                document.getElementById('kpiTotalRevenue').textContent = `₦${totalRevenue.toLocaleString()}`;
+                document.getElementById('kpiHybridRatio').textContent = `${hybridCount} Hybrid / ${onlineCount} Online`;
+                document.getElementById('kpiOpenInquiries').textContent = openInquiriesCount;
+
+                renderRecentEnrollments(enrollmentsData.slice(0, 5));
+                renderAllEnrollments(enrollmentsData);
+                renderAllInquiries(inquiriesData);
             } catch (err) {
                 console.error('Error loading dashboard data:', err);
+                document.getElementById('recentEnrollmentsBody').innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--accent-red);">Failed to connect to database: ${err.message}</td></tr>`;
+                document.getElementById('allEnrollmentsBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red);">Failed to connect to database: ${err.message}</td></tr>`;
+                document.getElementById('allInquiriesBody').innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--accent-red);">Failed to connect to database: ${err.message}</td></tr>`;
             }
         }
 
@@ -963,9 +985,14 @@
 
         async function updateEnrollmentStatus(id, newStatus) {
             try {
-                await fetch(`/api/admin/enrollments/${id}`, {
+                await fetch(`${SUPABASE_REST_URL}/enrollments?student_id=eq.${id}`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'apikey': SUPABASE_ADMIN_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ADMIN_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
                     body: JSON.stringify({ status: newStatus })
                 });
                 loadDashboardData();
@@ -976,9 +1003,14 @@
 
         async function updateInquiryStatus(id, newStatus) {
             try {
-                await fetch(`/api/admin/inquiries/${id}`, {
+                await fetch(`${SUPABASE_REST_URL}/contact_inquiries?ticket_id=eq.${id}`, {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'apikey': SUPABASE_ADMIN_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ADMIN_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
                     body: JSON.stringify({ status: newStatus })
                 });
                 loadDashboardData();
