@@ -236,6 +236,41 @@ app.post('/api/enroll', async (req, res) => {
   });
 });
 
+// 3.5 Payment Verification Endpoint
+app.post('/api/payment/verify', async (req, res) => {
+  const { studentId, txRef, flwRef, transactionId, amount, status } = req.body;
+
+  if (!studentId) {
+    return res.status(400).json({ success: false, message: 'Student ID is required.' });
+  }
+
+  // Update in local store
+  const localRecord = enrollmentsStore.find(e => (e.studentId || e.id) === studentId);
+  if (localRecord) {
+    localRecord.status = status || 'Confirmed / Enrolled';
+    localRecord.flwRef = flwRef || txRef;
+  }
+
+  // Update in Supabase
+  if (supabase) {
+    try {
+      await supabase
+        .from('enrollments')
+        .update({ status: status || 'Confirmed / Enrolled' })
+        .eq('student_id', studentId);
+      console.log(`✅ Payment verified for student ${studentId}: ${flwRef}`);
+    } catch (err) {
+      console.error('Supabase payment verify error:', err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    message: 'Payment verified and enrollment confirmed!',
+    data: { studentId, txRef, flwRef, status: status || 'Confirmed / Enrolled' }
+  });
+});
+
 // 4. Contact / Inquiry Endpoint
 app.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body;

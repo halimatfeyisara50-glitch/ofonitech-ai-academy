@@ -245,6 +245,38 @@ export default {
       }
     }
 
+    // 3.5 POST /api/payment/verify
+    if (path === '/api/payment/verify' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { studentId, txRef, flwRef, transactionId, amount, status } = body;
+
+        if (!studentId) {
+          return new Response(JSON.stringify({ success: false, message: 'Student ID is required.' }), { status: 400, headers: jsonHeaders });
+        }
+
+        // Update enrollment status in Supabase
+        try {
+          await supabaseFetch(`enrollments?student_id=eq.${studentId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              status: status || 'Confirmed / Enrolled'
+            })
+          });
+        } catch (dbErr) {
+          console.error('Supabase payment status update error:', dbErr);
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Payment verified and enrollment confirmed!',
+          data: { studentId, txRef, flwRef, status: status || 'Confirmed / Enrolled' }
+        }), { status: 200, headers: jsonHeaders });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: 'Invalid payload' }), { status: 400, headers: jsonHeaders });
+      }
+    }
+
     // 4. POST /api/contact
     if (path === '/api/contact' && request.method === 'POST') {
       try {

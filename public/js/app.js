@@ -285,15 +285,34 @@ async function handleEnrollSubmit(e) {
                 <div style="text-align:center;">
                     <div style="font-size: 3rem; color: #4ADE80;"><i class="fa-solid fa-circle-check"></i></div>
                     <h3 style="font-size: 1.4rem; font-weight:800; margin: 0.5rem 0;">Registration Confirmed!</h3>
-                    <p style="color:var(--text-secondary); font-size:0.9rem;">Thank you, <strong>${res.data.fullName}</strong>. Your enrollment has been successfully recorded on our Node server.</p>
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">Thank you, <strong>${res.data.fullName}</strong>. Your enrollment has been recorded.</p>
                     <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
                         <div>Registration Reference ID:</div>
                         <div class="res-id">${res.data.id}</div>
                         <div style="margin-top:0.4rem; font-size:0.85rem; color: var(--text-muted);">Program: ${res.data.programTitle} (${res.data.learningMode})</div>
                         <div style="font-size:0.85rem; color: var(--secondary); font-weight: 700;">Tuition: ${res.data.formattedTuition}</div>
                     </div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">A confirmation breakdown & payment link have been dispatched to <strong>${res.data.email}</strong>.</p>
-                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top:1rem;">Done</button>
+
+                    <!-- Flutterwave Pay Now Section -->
+                    <div id="flutterwaveActionBox" class="flw-payment-box">
+                        <div class="flw-badge"><i class="fa-solid fa-shield-halved"></i> Official Payment Gateway</div>
+                        <div class="flw-title">Lock in your slot via Flutterwave</div>
+                        <div class="flw-desc">
+                            Pay securely using <strong>Debit Card, Instant Bank Transfer</strong>, or <strong>USSD</strong>.
+                        </div>
+                        <button class="btn-flutterwave" id="payFlutterwaveBtn" onclick="initiateFlutterwavePayment('${res.data.id}', '${encodeURIComponent(res.data.fullName)}', '${res.data.email}', '${res.data.phone}', ${res.data.totalTuition}, '${encodeURIComponent(res.data.programTitle)}')">
+                            <i class="fa-solid fa-lock"></i> Pay ${res.data.formattedTuition} with Flutterwave
+                        </button>
+                        <div class="flw-channels">
+                            <span class="flw-channel-item"><i class="fa-solid fa-credit-card"></i> Cards</span>
+                            <span class="flw-channel-item"><i class="fa-solid fa-building-columns"></i> Bank Transfer</span>
+                            <span class="flw-channel-item"><i class="fa-solid fa-mobile-screen-button"></i> USSD</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="location.reload()" style="margin-top:0.5rem; width:100%; font-size:0.85rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-secondary);">
+                        Pay Later / Return to Academy
+                    </button>
                 </div>
             `;
         } else {

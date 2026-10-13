@@ -1348,6 +1348,132 @@ input:checked + .slider:before {
     .mode-switcher-container { flex-direction: column; gap: 0.8rem; border-radius: var(--radius-md); }
 }
 
+/* ==========================================================================
+   FLUTTERWAVE PAYMENT INTEGRATION STYLING
+   ========================================================================== */
+
+.flw-payment-box {
+    margin: 1.25rem 0;
+    padding: 1.35rem;
+    background: linear-gradient(145deg, rgba(251, 101, 20, 0.08) 0%, rgba(245, 166, 35, 0.04) 100%);
+    border: 1px solid rgba(251, 101, 20, 0.28);
+    border-radius: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.flw-payment-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FB6514, #F5A623, #FB6514);
+}
+
+.flw-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(251, 101, 20, 0.15);
+    color: #FDBA74;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.28rem 0.75rem;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.flw-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin-bottom: 0.35rem;
+}
+
+.flw-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.1rem;
+    line-height: 1.45;
+}
+
+.btn-flutterwave {
+    background: linear-gradient(135deg, #FB6514 0%, #F5A623 100%);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 0.98rem;
+    padding: 0.9rem 1.8rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 20px rgba(251, 101, 20, 0.35);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    letter-spacing: 0.2px;
+}
+
+.btn-flutterwave:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(251, 101, 20, 0.55);
+    filter: brightness(1.08);
+}
+
+.btn-flutterwave:active {
+    transform: translateY(0);
+}
+
+.flw-channels {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.9rem;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.flw-channel-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.flw-success-box {
+    margin: 1.25rem 0;
+    padding: 1.25rem;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.flw-success-title {
+    color: #4ADE80;
+    font-weight: 800;
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+}
+
+.flw-success-ref {
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #F1F5F9;
+    margin: 0.6rem 0;
+    display: inline-block;
+}
+
 
 
 
