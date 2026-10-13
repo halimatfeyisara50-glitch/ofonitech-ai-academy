@@ -12,11 +12,11 @@
  */
 
 const SUPABASE_CONFIG = {
-    // Paste your Supabase Project URL (e.g. 'https://abcdefghijkl.supabase.co')
-    url: 'https://your-project-id.supabase.co',
+    // Supabase Project URL
+    url: 'https://gghkcnecjqbiocitirls.supabase.co',
 
-    // Paste your Supabase public 'anon' key (starts with 'eyJhbGciOi...')
-    anonKey: 'your-supabase-anon-key-here'
+    // Supabase public 'anon' key
+    anonKey: 'sb_publishable_omTFMcIUOhZV1ZnH3b7pVw_-vdHCBdx'
 };
 
 let supabaseClient = null;
