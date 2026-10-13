@@ -277,6 +277,12 @@ export default {
       }
     }
 
+    // 3.6 GET /api/payment/config
+    if (path === '/api/payment/config' && request.method === 'GET') {
+      const publicKey = env?.FLUTTERWAVE_PUBLIC_KEY || '';
+      return new Response(JSON.stringify({ success: true, publicKey }), { headers: jsonHeaders });
+    }
+
     // 4. POST /api/contact
     if (path === '/api/contact' && request.method === 'POST') {
       try {

@@ -19,6 +19,22 @@ const FLUTTERWAVE_CONFIG = {
     country: 'NG'
 };
 
+// Auto-sync public key from backend if configured in .env or edge variables
+(async function initFlutterwaveKey() {
+    try {
+        const res = await fetch('/api/payment/config');
+        if (res.ok) {
+            const data = await res.json();
+            if (data?.publicKey && data.publicKey.startsWith('FLWPUBK')) {
+                FLUTTERWAVE_CONFIG.publicKey = data.publicKey;
+                console.log('⚡ Flutterwave public key synchronized from server.');
+            }
+        }
+    } catch (e) {
+        // Silently use configured fallback
+    }
+})();
+
 /**
  * Launch Flutterwave standard checkout modal
  */

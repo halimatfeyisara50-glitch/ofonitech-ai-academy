@@ -276,6 +276,12 @@ export async function onRequest(context) {
     }
   }
 
+  // 3.6 GET /api/payment/config
+  if (path.endsWith('/payment/config') && request.method === 'GET') {
+    const publicKey = env?.FLUTTERWAVE_PUBLIC_KEY || '';
+    return new Response(JSON.stringify({ success: true, publicKey }), { headers: jsonHeaders });
+  }
+
   // 4. POST /api/contact
   if (path.endsWith('/contact') && request.method === 'POST') {
     try {

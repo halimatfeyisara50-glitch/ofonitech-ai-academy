@@ -271,6 +271,14 @@ app.post('/api/payment/verify', async (req, res) => {
   });
 });
 
+// 3.6 Flutterwave Config Endpoint
+app.get('/api/payment/config', (req, res) => {
+  res.json({
+    success: true,
+    publicKey: process.env.FLUTTERWAVE_PUBLIC_KEY || ''
+  });
+});
+
 // 4. Contact / Inquiry Endpoint
 app.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body;
