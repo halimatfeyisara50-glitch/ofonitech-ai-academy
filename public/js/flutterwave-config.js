@@ -11,10 +11,8 @@
  */
 
 const FLUTTERWAVE_CONFIG = {
-    // Paste your Flutterwave Public Key from https://dashboard.flutterwave.com/settings/apis
-    // Test Mode starts with: 'FLWPUBK_TEST-...'
-    // Live Mode starts with: 'FLWPUBK-...'
-    publicKey: window.FLUTTERWAVE_PUBLIC_KEY || 'FLWPUBK_TEST-SANDBOXDEMOKEY-X',
+    // Flutterwave Public Key
+    publicKey: window.FLUTTERWAVE_PUBLIC_KEY || 'FLWPUBK_TEST-094c7fa3e61030740c3bec88443af00a-X',
     currency: 'NGN',
     country: 'NG'
 };

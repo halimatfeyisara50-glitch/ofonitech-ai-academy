@@ -278,7 +278,7 @@ export async function onRequest(context) {
 
   // 3.6 GET /api/payment/config
   if (path.endsWith('/payment/config') && request.method === 'GET') {
-    const publicKey = env?.FLUTTERWAVE_PUBLIC_KEY || '';
+    const publicKey = env?.FLUTTERWAVE_PUBLIC_KEY || 'FLWPUBK_TEST-094c7fa3e61030740c3bec88443af00a-X';
     return new Response(JSON.stringify({ success: true, publicKey }), { headers: jsonHeaders });
   }
 
