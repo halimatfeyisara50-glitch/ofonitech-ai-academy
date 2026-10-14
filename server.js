@@ -236,19 +236,23 @@ app.post('/api/enroll', async (req, res) => {
   });
 });
 
-// 3.5 Payment Verification Endpoint
+// 3.5 Payment Verification Endpoint (Monnify & Multi-Gateway)
 app.post('/api/payment/verify', async (req, res) => {
-  const { studentId, txRef, flwRef, transactionId, amount, status } = req.body;
+  const { studentId, txRef, flwRef, paymentReference, transactionReference, amount, status, gateway } = req.body;
 
   if (!studentId) {
     return res.status(400).json({ success: false, message: 'Student ID is required.' });
   }
 
+  const verifiedRef = paymentReference || transactionReference || flwRef || txRef || `MNFY-${Date.now()}`;
+  const finalStatus = status || 'Confirmed / Enrolled';
+
   // Update in local store
   const localRecord = enrollmentsStore.find(e => (e.studentId || e.id) === studentId);
   if (localRecord) {
-    localRecord.status = status || 'Confirmed / Enrolled';
-    localRecord.flwRef = flwRef || txRef;
+    localRecord.status = finalStatus;
+    localRecord.paymentRef = verifiedRef;
+    localRecord.paymentGateway = gateway || 'Monnify';
   }
 
   // Update in Supabase
@@ -256,9 +260,9 @@ app.post('/api/payment/verify', async (req, res) => {
     try {
       await supabase
         .from('enrollments')
-        .update({ status: status || 'Confirmed / Enrolled' })
+        .update({ status: finalStatus })
         .eq('student_id', studentId);
-      console.log(`✅ Payment verified for student ${studentId}: ${flwRef}`);
+      console.log(`✅ Payment verified for student ${studentId}: [${gateway || 'Monnify'}] Ref: ${verifiedRef}`);
     } catch (err) {
       console.error('Supabase payment verify error:', err.message);
     }
@@ -267,15 +271,28 @@ app.post('/api/payment/verify', async (req, res) => {
   res.json({
     success: true,
     message: 'Payment verified and enrollment confirmed!',
-    data: { studentId, txRef, flwRef, status: status || 'Confirmed / Enrolled' }
+    data: { 
+      studentId, 
+      paymentReference: verifiedRef, 
+      gateway: gateway || 'Monnify',
+      status: finalStatus 
+    }
   });
 });
 
-// 3.6 Flutterwave Config Endpoint
+// 3.6 Payment Config Endpoint (Monnify Primary)
 app.get('/api/payment/config', (req, res) => {
+  const apiKey = process.env.MONNIFY_API_KEY || 'MK_PROD_6ZE6D01GDR';
+  const contractCode = process.env.MONNIFY_CONTRACT_CODE || '310717710968';
+  const isTest = (process.env.MONNIFY_BASE_URL || '').includes('sandbox') || apiKey.startsWith('MK_TEST_');
+
   res.json({
     success: true,
-    publicKey: process.env.FLUTTERWAVE_PUBLIC_KEY || ''
+    gateway: 'monnify',
+    apiKey: apiKey,
+    contractCode: contractCode,
+    isTest: isTest,
+    publicKey: apiKey // Provided for compatibility
   });
 });
 

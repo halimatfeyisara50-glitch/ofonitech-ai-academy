@@ -293,20 +293,20 @@ async function handleEnrollSubmit(e) {
                         <div style="font-size:0.85rem; color: var(--secondary); font-weight: 700;">Tuition: ${res.data.formattedTuition}</div>
                     </div>
 
-                    <!-- Flutterwave Pay Now Section -->
-                    <div id="flutterwaveActionBox" class="flw-payment-box">
-                        <div class="flw-badge"><i class="fa-solid fa-shield-halved"></i> Official Payment Gateway</div>
-                        <div class="flw-title">Lock in your slot via Flutterwave</div>
-                        <div class="flw-desc">
+                    <!-- Monnify Pay Now Section -->
+                    <div id="monnifyActionBox" class="monnify-payment-box">
+                        <div class="monnify-badge"><i class="fa-solid fa-shield-halved"></i> Official Payment Gateway</div>
+                        <div class="monnify-title">Lock in your slot via Monnify</div>
+                        <div class="monnify-desc">
                             Pay securely using <strong>Debit Card, Instant Bank Transfer</strong>, or <strong>USSD</strong>.
                         </div>
-                        <button class="btn-flutterwave" id="payFlutterwaveBtn" onclick="initiateFlutterwavePayment('${res.data.id}', '${encodeURIComponent(res.data.fullName)}', '${res.data.email}', '${res.data.phone}', ${res.data.totalTuition}, '${encodeURIComponent(res.data.programTitle)}')">
-                            <i class="fa-solid fa-lock"></i> Pay ${res.data.formattedTuition} with Flutterwave
+                        <button class="btn-monnify" id="payMonnifyBtn" onclick="initiateMonnifyPayment('${res.data.id}', '${encodeURIComponent(res.data.fullName)}', '${res.data.email}', '${res.data.phone}', ${res.data.totalTuition}, '${encodeURIComponent(res.data.programTitle)}')">
+                            <i class="fa-solid fa-lock"></i> Pay ${res.data.formattedTuition} with Monnify
                         </button>
-                        <div class="flw-channels">
-                            <span class="flw-channel-item"><i class="fa-solid fa-credit-card"></i> Cards</span>
-                            <span class="flw-channel-item"><i class="fa-solid fa-building-columns"></i> Bank Transfer</span>
-                            <span class="flw-channel-item"><i class="fa-solid fa-mobile-screen-button"></i> USSD</span>
+                        <div class="monnify-channels">
+                            <span class="monnify-channel-item"><i class="fa-solid fa-credit-card"></i> Cards</span>
+                            <span class="monnify-channel-item"><i class="fa-solid fa-building-columns"></i> Bank Transfer</span>
+                            <span class="monnify-channel-item"><i class="fa-solid fa-mobile-screen-button"></i> USSD</span>
                         </div>
                     </div>
 

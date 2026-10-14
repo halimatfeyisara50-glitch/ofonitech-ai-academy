@@ -249,18 +249,21 @@ export default {
     if (path === '/api/payment/verify' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const { studentId, txRef, flwRef, transactionId, amount, status } = body;
+        const { studentId, txRef, flwRef, paymentReference, transactionReference, amount, status, gateway } = body;
 
         if (!studentId) {
           return new Response(JSON.stringify({ success: false, message: 'Student ID is required.' }), { status: 400, headers: jsonHeaders });
         }
+
+        const verifiedRef = paymentReference || transactionReference || flwRef || txRef || `MNFY-${Date.now()}`;
+        const finalStatus = status || 'Confirmed / Enrolled';
 
         // Update enrollment status in Supabase
         try {
           await supabaseFetch(`enrollments?student_id=eq.${studentId}`, {
             method: 'PATCH',
             body: JSON.stringify({
-              status: status || 'Confirmed / Enrolled'
+              status: finalStatus
             })
           });
         } catch (dbErr) {
@@ -270,7 +273,12 @@ export default {
         return new Response(JSON.stringify({
           success: true,
           message: 'Payment verified and enrollment confirmed!',
-          data: { studentId, txRef, flwRef, status: status || 'Confirmed / Enrolled' }
+          data: { 
+            studentId, 
+            paymentReference: verifiedRef, 
+            gateway: gateway || 'Monnify',
+            status: finalStatus 
+          }
         }), { status: 200, headers: jsonHeaders });
       } catch (e) {
         return new Response(JSON.stringify({ success: false, message: 'Invalid payload' }), { status: 400, headers: jsonHeaders });
@@ -279,8 +287,17 @@ export default {
 
     // 3.6 GET /api/payment/config
     if (path === '/api/payment/config' && request.method === 'GET') {
-      const publicKey = env?.FLUTTERWAVE_PUBLIC_KEY || 'FLWPUBK_TEST-094c7fa3e61030740c3bec88443af00a-X';
-      return new Response(JSON.stringify({ success: true, publicKey }), { headers: jsonHeaders });
+      const apiKey = env?.MONNIFY_API_KEY || 'MK_PROD_6ZE6D01GDR';
+      const contractCode = env?.MONNIFY_CONTRACT_CODE || '310717710968';
+      const isTest = (env?.MONNIFY_BASE_URL || '').includes('sandbox') || apiKey.startsWith('MK_TEST_');
+      return new Response(JSON.stringify({ 
+        success: true, 
+        gateway: 'monnify',
+        apiKey, 
+        contractCode, 
+        isTest,
+        publicKey: apiKey
+      }), { headers: jsonHeaders });
     }
 
     // 4. POST /api/contact

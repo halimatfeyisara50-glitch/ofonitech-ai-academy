@@ -1349,20 +1349,23 @@ input:checked + .slider:before {
 }
 
 /* ==========================================================================
-   FLUTTERWAVE PAYMENT INTEGRATION STYLING
+   MONNIFY PAYMENT INTEGRATION STYLING
    ========================================================================== */
 
+.monnify-payment-box,
 .flw-payment-box {
     margin: 1.25rem 0;
     padding: 1.35rem;
-    background: linear-gradient(145deg, rgba(251, 101, 20, 0.08) 0%, rgba(245, 166, 35, 0.04) 100%);
-    border: 1px solid rgba(251, 101, 20, 0.28);
+    background: linear-gradient(145deg, rgba(0, 102, 246, 0.08) 0%, rgba(0, 210, 255, 0.05) 100%);
+    border: 1px solid rgba(0, 210, 255, 0.35);
     border-radius: 14px;
     text-align: center;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 102, 246, 0.15);
 }
 
+.monnify-payment-box::before,
 .flw-payment-box::before {
     content: '';
     position: absolute;
@@ -1370,15 +1373,16 @@ input:checked + .slider:before {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #FB6514, #F5A623, #FB6514);
+    background: linear-gradient(90deg, #0066F6, #00D2FF, #0066F6);
 }
 
+.monnify-badge,
 .flw-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(251, 101, 20, 0.15);
-    color: #FDBA74;
+    background: rgba(0, 210, 255, 0.15);
+    color: #38BDF8;
     font-size: 0.78rem;
     font-weight: 700;
     padding: 0.28rem 0.75rem;
@@ -1386,8 +1390,10 @@ input:checked + .slider:before {
     margin-bottom: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 210, 255, 0.25);
 }
 
+.monnify-title,
 .flw-title {
     font-size: 1.05rem;
     font-weight: 800;
@@ -1395,6 +1401,7 @@ input:checked + .slider:before {
     margin-bottom: 0.35rem;
 }
 
+.monnify-desc,
 .flw-desc {
     font-size: 0.82rem;
     color: var(--text-secondary);
@@ -1402,8 +1409,9 @@ input:checked + .slider:before {
     line-height: 1.45;
 }
 
+.btn-monnify,
 .btn-flutterwave {
-    background: linear-gradient(135deg, #FB6514 0%, #F5A623 100%);
+    background: linear-gradient(135deg, #0052CC 0%, #0066F6 40%, #00D2FF 100%);
     color: #FFFFFF !important;
     font-weight: 700;
     font-size: 0.98rem;
@@ -1416,21 +1424,24 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    box-shadow: 0 4px 20px rgba(251, 101, 20, 0.35);
+    box-shadow: 0 4px 22px rgba(0, 102, 246, 0.45);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     letter-spacing: 0.2px;
 }
 
+.btn-monnify:hover,
 .btn-flutterwave:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(251, 101, 20, 0.55);
-    filter: brightness(1.08);
+    box-shadow: 0 8px 30px rgba(0, 210, 255, 0.55);
+    filter: brightness(1.1);
 }
 
+.btn-monnify:active,
 .btn-flutterwave:active {
     transform: translateY(0);
 }
 
+.monnify-channels,
 .flw-channels {
     display: flex;
     align-items: center;
@@ -1441,21 +1452,24 @@ input:checked + .slider:before {
     color: var(--text-muted);
 }
 
+.monnify-channel-item,
 .flw-channel-item {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
 }
 
+.monnify-success-box,
 .flw-success-box {
     margin: 1.25rem 0;
-    padding: 1.25rem;
+    padding: 1.35rem;
     background: rgba(34, 197, 94, 0.12);
     border: 1px solid rgba(34, 197, 94, 0.35);
     border-radius: 14px;
     text-align: center;
 }
 
+.monnify-success-title,
 .flw-success-title {
     color: #4ADE80;
     font-weight: 800;
@@ -1463,8 +1477,9 @@ input:checked + .slider:before {
     margin-bottom: 0.4rem;
 }
 
+.monnify-success-ref,
 .flw-success-ref {
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.4);
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
     font-family: monospace;
@@ -1472,6 +1487,7 @@ input:checked + .slider:before {
     color: #F1F5F9;
     margin: 0.6rem 0;
     display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 
