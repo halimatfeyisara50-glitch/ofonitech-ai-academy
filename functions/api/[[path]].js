@@ -248,13 +248,13 @@ export async function onRequest(context) {
   if (path.includes('/payment/verify') && request.method === 'POST') {
     try {
       const body = await request.json();
-      const { studentId, txRef, flwRef, paymentReference, transactionReference, amount, status, gateway } = body;
+      const { studentId, paymentReference, transactionReference, txRef, amount, status } = body;
 
       if (!studentId) {
         return new Response(JSON.stringify({ success: false, message: 'Student ID is required.' }), { status: 400, headers: jsonHeaders });
       }
 
-      const verifiedRef = paymentReference || transactionReference || flwRef || txRef || `MNFY-${Date.now()}`;
+      const verifiedRef = paymentReference || transactionReference || txRef || `MNFY-${Date.now()}`;
       const finalStatus = status || 'Confirmed / Enrolled';
 
       // Update enrollment status in Supabase
@@ -275,7 +275,7 @@ export async function onRequest(context) {
         data: { 
           studentId, 
           paymentReference: verifiedRef, 
-          gateway: gateway || 'Monnify',
+          gateway: 'Monnify',
           status: finalStatus 
         }
       }), { status: 200, headers: jsonHeaders });
@@ -294,9 +294,61 @@ export async function onRequest(context) {
       gateway: 'monnify',
       apiKey, 
       contractCode,
-      isTest,
-      publicKey: apiKey
+      isTest
     }), { headers: jsonHeaders });
+  }
+
+  // 3.7 POST /api/payment/monnify-init
+  if (path.endsWith('/payment/monnify-init') && request.method === 'POST') {
+    try {
+      const body = await request.json();
+      const { amount, studentId, fullName, email, phone, programTitle } = body;
+
+      const apiKey = env?.MONNIFY_API_KEY || 'MK_PROD_6ZE6D01GDR';
+      const contractCode = env?.MONNIFY_CONTRACT_CODE || '310717710968';
+      const digitsOnly = (phone || '').replace(/[^0-9]/g, '');
+      const cleanPhone = digitsOnly.length >= 10 ? digitsOnly : '08012345678';
+      const cleanTitle = (programTitle || 'Academy Program').slice(0, 30);
+      const paymentReference = `OFONI-${studentId}-${Date.now().toString().slice(-6)}`;
+
+      const initResponse = await fetch('https://sdk.monnify.com/app/transaction/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Number(amount),
+          customerName: fullName || 'Student',
+          customerEmail: email,
+          customerMobileNumber: cleanPhone,
+          reference: paymentReference,
+          paymentDescription: `Tuition: ${cleanTitle} (${studentId})`,
+          currency: 'NGN',
+          currencyCode: 'NGN',
+          contractCode: contractCode,
+          apiKey: apiKey
+        })
+      });
+
+      const initData = await initResponse.json();
+      if (initData?.data?.paymentData?.transactionReference) {
+        const txRef = initData.data.paymentData.transactionReference;
+        return new Response(JSON.stringify({
+          success: true,
+          transactionReference: txRef,
+          checkoutUrl: `https://sdk.monnify.com/checkout/${txRef}`,
+          paymentReference: paymentReference
+        }), { status: 200, headers: jsonHeaders });
+      }
+
+      return new Response(JSON.stringify({
+        success: false,
+        message: initData?.responseMessage || 'Could not initialize Monnify transaction.'
+      }), { status: 400, headers: jsonHeaders });
+    } catch (err) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Failed to communicate with Monnify gateway servers.'
+      }), { status: 500, headers: jsonHeaders });
+    }
   }
 
   // 4. POST /api/contact

@@ -237,14 +237,15 @@ app.post('/api/enroll', async (req, res) => {
 });
 
 // 3.5 Payment Verification Endpoint (Monnify & Multi-Gateway)
+// 3.5 Payment Verification Endpoint (Monnify Gateway)
 app.post('/api/payment/verify', async (req, res) => {
-  const { studentId, txRef, flwRef, paymentReference, transactionReference, amount, status, gateway } = req.body;
+  const { studentId, paymentReference, transactionReference, txRef, amount, status } = req.body;
 
   if (!studentId) {
     return res.status(400).json({ success: false, message: 'Student ID is required.' });
   }
 
-  const verifiedRef = paymentReference || transactionReference || flwRef || txRef || `MNFY-${Date.now()}`;
+  const verifiedRef = paymentReference || transactionReference || txRef || `MNFY-${Date.now()}`;
   const finalStatus = status || 'Confirmed / Enrolled';
 
   // Update in local store
@@ -252,7 +253,7 @@ app.post('/api/payment/verify', async (req, res) => {
   if (localRecord) {
     localRecord.status = finalStatus;
     localRecord.paymentRef = verifiedRef;
-    localRecord.paymentGateway = gateway || 'Monnify';
+    localRecord.paymentGateway = 'Monnify';
   }
 
   // Update in Supabase
@@ -262,7 +263,7 @@ app.post('/api/payment/verify', async (req, res) => {
         .from('enrollments')
         .update({ status: finalStatus })
         .eq('student_id', studentId);
-      console.log(`✅ Payment verified for student ${studentId}: [${gateway || 'Monnify'}] Ref: ${verifiedRef}`);
+      console.log(`✅ Monnify payment verified for student ${studentId}: Ref: ${verifiedRef}`);
     } catch (err) {
       console.error('Supabase payment verify error:', err.message);
     }
@@ -274,13 +275,13 @@ app.post('/api/payment/verify', async (req, res) => {
     data: { 
       studentId, 
       paymentReference: verifiedRef, 
-      gateway: gateway || 'Monnify',
+      gateway: 'Monnify',
       status: finalStatus 
     }
   });
 });
 
-// 3.6 Payment Config Endpoint (Monnify Primary)
+// 3.6 Monnify Config Endpoint
 app.get('/api/payment/config', (req, res) => {
   const apiKey = process.env.MONNIFY_API_KEY || 'MK_PROD_6ZE6D01GDR';
   const contractCode = process.env.MONNIFY_CONTRACT_CODE || '310717710968';
@@ -291,9 +292,61 @@ app.get('/api/payment/config', (req, res) => {
     gateway: 'monnify',
     apiKey: apiKey,
     contractCode: contractCode,
-    isTest: isTest,
-    publicKey: apiKey // Provided for compatibility
+    isTest: isTest
   });
+});
+
+// 3.7 Server-side Monnify Transaction Initialization (Fast & Bypass Iframe Blocks)
+app.post('/api/payment/monnify-init', async (req, res) => {
+  const { amount, studentId, fullName, email, phone, programTitle } = req.body;
+
+  const apiKey = process.env.MONNIFY_API_KEY || 'MK_PROD_6ZE6D01GDR';
+  const contractCode = process.env.MONNIFY_CONTRACT_CODE || '310717710968';
+  const digitsOnly = (phone || '').replace(/[^0-9]/g, '');
+  const cleanPhone = digitsOnly.length >= 10 ? digitsOnly : '08012345678';
+  const cleanTitle = (programTitle || 'Academy Program').slice(0, 30);
+  const paymentReference = `OFONI-${studentId}-${Date.now().toString().slice(-6)}`;
+
+  try {
+    const initResponse = await fetch('https://sdk.monnify.com/app/transaction/init', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: Number(amount),
+        customerName: fullName || 'Student',
+        customerEmail: email,
+        customerMobileNumber: cleanPhone,
+        reference: paymentReference,
+        paymentDescription: `Tuition: ${cleanTitle} (${studentId})`,
+        currency: 'NGN',
+        currencyCode: 'NGN',
+        contractCode: contractCode,
+        apiKey: apiKey
+      })
+    });
+
+    const initData = await initResponse.json();
+    if (initData?.data?.paymentData?.transactionReference) {
+      const txRef = initData.data.paymentData.transactionReference;
+      return res.json({
+        success: true,
+        transactionReference: txRef,
+        checkoutUrl: `https://sdk.monnify.com/checkout/${txRef}`,
+        paymentReference: paymentReference
+      });
+    }
+
+    res.status(400).json({
+      success: false,
+      message: initData?.responseMessage || 'Could not initialize Monnify transaction.'
+    });
+  } catch (err) {
+    console.error('Monnify server init error:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to communicate with Monnify gateway servers.'
+    });
+  }
 });
 
 // 4. Contact / Inquiry Endpoint

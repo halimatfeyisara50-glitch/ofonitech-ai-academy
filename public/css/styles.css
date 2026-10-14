@@ -1352,8 +1352,13 @@ input:checked + .slider:before {
    MONNIFY PAYMENT INTEGRATION STYLING
    ========================================================================== */
 
-.monnify-payment-box,
-.flw-payment-box {
+/* Prevent Monnify's default blocking spinner overlay from freezing the screen */
+#MonnifyPreLoader {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.monnify-payment-box {
     margin: 1.25rem 0;
     padding: 1.35rem;
     background: linear-gradient(145deg, rgba(0, 102, 246, 0.08) 0%, rgba(0, 210, 255, 0.05) 100%);
@@ -1365,8 +1370,7 @@ input:checked + .slider:before {
     box-shadow: 0 10px 30px rgba(0, 102, 246, 0.15);
 }
 
-.monnify-payment-box::before,
-.flw-payment-box::before {
+.monnify-payment-box::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1376,8 +1380,7 @@ input:checked + .slider:before {
     background: linear-gradient(90deg, #0066F6, #00D2FF, #0066F6);
 }
 
-.monnify-badge,
-.flw-badge {
+.monnify-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -1393,24 +1396,21 @@ input:checked + .slider:before {
     border: 1px solid rgba(0, 210, 255, 0.25);
 }
 
-.monnify-title,
-.flw-title {
+.monnify-title {
     font-size: 1.05rem;
     font-weight: 800;
     color: #F8FAFC;
     margin-bottom: 0.35rem;
 }
 
-.monnify-desc,
-.flw-desc {
+.monnify-desc {
     font-size: 0.82rem;
     color: var(--text-secondary);
     margin-bottom: 1.1rem;
     line-height: 1.45;
 }
 
-.btn-monnify,
-.btn-flutterwave {
+.btn-monnify {
     background: linear-gradient(135deg, #0052CC 0%, #0066F6 40%, #00D2FF 100%);
     color: #FFFFFF !important;
     font-weight: 700;
@@ -1429,20 +1429,17 @@ input:checked + .slider:before {
     letter-spacing: 0.2px;
 }
 
-.btn-monnify:hover,
-.btn-flutterwave:hover {
+.btn-monnify:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(0, 210, 255, 0.55);
     filter: brightness(1.1);
 }
 
-.btn-monnify:active,
-.btn-flutterwave:active {
+.btn-monnify:active {
     transform: translateY(0);
 }
 
-.monnify-channels,
-.flw-channels {
+.monnify-channels {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1452,15 +1449,13 @@ input:checked + .slider:before {
     color: var(--text-muted);
 }
 
-.monnify-channel-item,
-.flw-channel-item {
+.monnify-channel-item {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
 }
 
-.monnify-success-box,
-.flw-success-box {
+.monnify-success-box {
     margin: 1.25rem 0;
     padding: 1.35rem;
     background: rgba(34, 197, 94, 0.12);
@@ -1469,16 +1464,91 @@ input:checked + .slider:before {
     text-align: center;
 }
 
-.monnify-success-title,
-.flw-success-title {
+.monnify-success-title {
     color: #4ADE80;
     font-weight: 800;
     font-size: 1.15rem;
     margin-bottom: 0.4rem;
 }
 
-.monnify-success-ref,
-.flw-success-ref {
+/* Custom Fast-Loading Monnify Iframe Modal Overlay */
+.monnify-custom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999999;
+    background: rgba(7, 9, 19, 0.92);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    animation: fadeIn 0.25s ease;
+}
+
+.monnify-custom-container {
+    width: 100%;
+    max-width: 500px;
+    height: 90vh;
+    max-height: 720px;
+    background: #0f172a;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 210, 255, 0.35);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 102, 246, 0.3);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.monnify-custom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    background: #090d1a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.monnify-custom-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.monnify-custom-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #F1F5F9;
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.monnify-custom-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #FCA5A5;
+}
+
+.monnify-custom-iframe {
+    width: 100%;
+    flex: 1;
+    border: none;
+    background: #ffffff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.monnify-success-ref {
     background: rgba(0, 0, 0, 0.4);
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
