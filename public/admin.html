@@ -62,11 +62,117 @@
             background: var(--bg-card);
             border: 1px solid var(--bg-card-border);
             border-radius: 20px;
-            padding: 40px;
+            padding: 35px 30px;
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
+            max-height: 90vh;
+            overflow-y: auto;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             text-align: center;
+        }
+
+        .auth-label {
+            display: block;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--accent-cyan);
+            margin-bottom: 6px;
+        }
+
+        .qr-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px;
+            display: inline-block;
+            margin: 10px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .qr-card img {
+            display: block;
+            width: 165px;
+            height: 165px;
+            border-radius: 6px;
+        }
+
+        .secret-box {
+            background: rgba(255,255,255,0.06);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            word-break: break-all;
+        }
+
+        .btn-copy-secret {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-secret:hover {
+            background: var(--accent-cyan);
+            color: #070913;
+        }
+
+        .btn-sidebar-action {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--bg-card-border);
+            color: var(--text-muted);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-sidebar-action:hover {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-main);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-sidebar-action.danger:hover {
+            background: rgba(239,68,68,0.15);
+            color: #F87171;
+            border-color: rgba(239,68,68,0.3);
+        }
+
+        .btn-text-link {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .btn-text-link:hover {
+            color: var(--accent-cyan);
         }
 
         .auth-icon {
@@ -575,15 +681,10 @@
 </head>
 <body>
 
-    <!-- Auth Passkey Modal -->
+    <!-- Auth Security Overlay (Google Authenticator 2FA & Custom Password) -->
     <div class="auth-overlay" id="authOverlay">
-        <div class="auth-card">
-            <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <h2 class="auth-title">Admin Access</h2>
-            <p class="auth-sub">Enter ofonitech admin passkey to access command center.</p>
-            <input type="password" id="passkeyInput" class="auth-input" placeholder="Enter Admin Passkey (default: admin123)" onkeypress="if(event.key === 'Enter') checkAuth()">
-            <button class="btn-glow" onclick="checkAuth()">Authenticate <i class="fa-solid fa-arrow-right"></i></button>
-            <div class="auth-error" id="authError">Invalid passkey! Please check and try again.</div>
+        <div class="auth-card" id="authCardContent">
+            <!-- Dynamically populated by initAuthFlow() -->
         </div>
     </div>
 
@@ -623,6 +724,12 @@
                     <div class="user-role">Super Administrator</div>
                 </div>
             </div>
+            <button class="btn-sidebar-action" type="button" onclick="openSecurityModal()">
+                <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> 2FA & Security Settings
+            </button>
+            <button class="btn-sidebar-action danger" type="button" onclick="adminLogout()">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock & Log Out
+            </button>
         </div>
     </aside>
 
@@ -781,6 +888,20 @@
 
     </main>
 
+    <!-- Security Settings Modal -->
+    <div class="modal" id="securityModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="close-modal" onclick="closeSecurityModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 style="font-family: var(--font-head); font-size: 20px; margin-bottom: 8px;">
+                <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> Security & 2FA Settings
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                Change your master password or view/re-link your Google Authenticator key.
+            </p>
+            <div id="securityModalBody"></div>
+        </div>
+    </div>
+
     <!-- Detail Modal -->
     <div class="modal" id="detailModal">
         <div class="modal-content">
@@ -792,17 +913,393 @@
 
     <!-- Admin JS -->
     <script>
+        // ============================================================================
+        // OFONITECH ADMIN 2FA (GOOGLE AUTHENTICATOR) & CUSTOM PASSWORD ENGINE
+        // ============================================================================
+
+        const AUTH_STORAGE_KEY = 'ofonitech_admin_auth_v2';
+        const SESSION_KEY = 'ofonitech_admin_session';
+        let pendingSetupSecret = null;
         let enrollmentsData = [];
         let inquiriesData = [];
 
-        function checkAuth() {
-            const val = document.getElementById('passkeyInput').value;
-            if (val === 'admin123' || val === 'ofonitech2026' || val.trim().length > 0) {
+        // Base32 Decoder for Google Authenticator (RFC 3548/4648)
+        function base32ToUint8Array(base32) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let bits = '';
+            const clean = base32.replace(/[\s=-]/g, '').toUpperCase();
+            for (let i = 0; i < clean.length; i++) {
+                const val = alphabet.indexOf(clean[i]);
+                if (val === -1) continue;
+                bits += val.toString(2).padStart(5, '0');
+            }
+            const bytes = [];
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+                bytes.push(parseInt(bits.substr(i, 8), 2));
+            }
+            return new Uint8Array(bytes);
+        }
+
+        // Generate RFC 4648 Compliant Base32 Secret Key
+        function generateBase32Secret(length = 16) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let secret = '';
+            const randomValues = new Uint8Array(length);
+            window.crypto.getRandomValues(randomValues);
+            for (let i = 0; i < length; i++) {
+                secret += chars[randomValues[i] % chars.length];
+            }
+            return secret;
+        }
+
+        // SHA-256 Password Hasher
+        async function hashPassword(password) {
+            const msgBuffer = new TextEncoder().encode(password.trim());
+            const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // RFC 6238 TOTP Generator using Native Web Crypto HMAC-SHA1
+        async function generateTOTP(secret, timeStepOffset = 0) {
+            const epoch = Math.floor(Date.now() / 1000);
+            const counter = Math.floor(epoch / 30) + timeStepOffset;
+
+            const counterBuf = new ArrayBuffer(8);
+            const view = new DataView(counterBuf);
+            view.setUint32(0, Math.floor(counter / 0x100000000));
+            view.setUint32(4, counter & 0xffffffff);
+
+            const keyBytes = base32ToUint8Array(secret);
+            const cryptoKey = await window.crypto.subtle.importKey(
+                'raw',
+                keyBytes,
+                { name: 'HMAC', hash: { name: 'SHA-1' } },
+                false,
+                ['sign']
+            );
+
+            const signature = await window.crypto.subtle.sign('HMAC', cryptoKey, counterBuf);
+            const sigBytes = new Uint8Array(signature);
+            const offset = sigBytes[sigBytes.length - 1] & 0x0f;
+
+            const code = (((sigBytes[offset] & 0x7f) << 24) |
+                          ((sigBytes[offset + 1] & 0xff) << 16) |
+                          ((sigBytes[offset + 2] & 0xff) << 8) |
+                          (sigBytes[offset + 3] & 0xff)) % 1000000;
+
+            return code.toString().padStart(6, '0');
+        }
+
+        // Verify TOTP with Clock Drift Allowance (-1, 0, +1)
+        async function verifyTOTP(inputCode, secret) {
+            const clean = inputCode.toString().replace(/\s/g, '');
+            if (!/^\d{6}$/.test(clean)) return false;
+
+            for (const offset of [0, -1, 1]) {
+                try {
+                    const expected = await generateTOTP(secret, offset);
+                    if (expected === clean) return true;
+                } catch (e) {
+                    console.error('TOTP offset error:', e);
+                }
+            }
+            return false;
+        }
+
+        function getStoredAuth() {
+            try {
+                const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Initialize Authentication on Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initAuthFlow();
+        });
+
+        async function initAuthFlow() {
+            const sessionActive = sessionStorage.getItem(SESSION_KEY);
+            const authData = getStoredAuth();
+
+            if (sessionActive === 'active' && authData) {
+                // Session active
                 document.getElementById('authOverlay').style.display = 'none';
                 loadDashboardData();
+            } else if (!authData) {
+                // First-time setup: Allow user to create custom password & link Google Authenticator
+                renderSetupView();
+                document.getElementById('authOverlay').style.display = 'flex';
             } else {
-                document.getElementById('authError').style.display = 'block';
+                // Configured user: Login with custom password + 6-digit TOTP
+                renderLoginView();
+                document.getElementById('authOverlay').style.display = 'flex';
             }
+        }
+
+        // 1. Render Setup Wizard (Password Creation + QR Code)
+        function renderSetupView() {
+            pendingSetupSecret = generateBase32Secret(16);
+            const issuer = encodeURIComponent('OfoniTech AI Academy');
+            const account = encodeURIComponent('Admin');
+            const otpAuthUri = `otpauth://totp/${issuer}:${account}?secret=${pendingSetupSecret}&issuer=${issuer}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(otpAuthUri)}&bgcolor=ffffff`;
+
+            const container = document.getElementById('authCardContent');
+            container.innerHTML = `
+                <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h2 class="auth-title">Setup Admin Security</h2>
+                <p class="auth-sub">Create your master password and scan the QR code with <strong>Google Authenticator</strong>.</p>
+
+                <div style="text-align: left; margin-bottom: 14px;">
+                    <label class="auth-label"><i class="fa-solid fa-key"></i> 1. Create Master Password</label>
+                    <input type="password" id="setupPass" class="auth-input" placeholder="Create Master Password (min 6 chars)">
+                    <input type="password" id="setupConfirmPass" class="auth-input" placeholder="Confirm Master Password">
+                </div>
+
+                <div style="text-align: left; margin-bottom: 14px;">
+                    <label class="auth-label"><i class="fa-solid fa-qrcode"></i> 2. Link Google Authenticator</label>
+                    <div style="text-align:center;">
+                        <div class="qr-card">
+                            <img src="${qrUrl}" alt="Google Authenticator QR Code">
+                        </div>
+                        <div class="secret-box">
+                            <span>${pendingSetupSecret}</span>
+                            <button class="btn-copy-secret" type="button" onclick="copySecretKey('${pendingSetupSecret}')">
+                                <i class="fa-solid fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+                            Open <strong>Google Authenticator</strong> on your phone > Tap <strong>+</strong> > Scan QR code (or enter the key above).
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: left; margin-bottom: 18px;">
+                    <label class="auth-label"><i class="fa-solid fa-mobile-screen"></i> 3. Enter 6-Digit Code from App</label>
+                    <input type="text" id="setupTotp" class="auth-input" maxlength="6" placeholder="000 000" style="letter-spacing: 6px; font-weight: 700; font-size: 20px; text-align:center;" onkeypress="if(event.key==='Enter') finalizeSecuritySetup()">
+                </div>
+
+                <button class="btn-glow" type="button" onclick="finalizeSecuritySetup()">
+                    <i class="fa-solid fa-lock"></i> Save Password & Activate 2FA
+                </button>
+                <div class="auth-error" id="setupError" style="display:none; margin-top:12px;"></div>
+            `;
+        }
+
+        function copySecretKey(secret) {
+            navigator.clipboard.writeText(secret).then(() => {
+                alert('Secret key copied to clipboard! You can paste this directly into Google Authenticator.');
+            }).catch(() => {
+                prompt('Copy your 2FA Secret Key:', secret);
+            });
+        }
+
+        async function finalizeSecuritySetup() {
+            const pass = document.getElementById('setupPass').value.trim();
+            const confirm = document.getElementById('setupConfirmPass').value.trim();
+            const totpCode = document.getElementById('setupTotp').value.trim();
+            const errBox = document.getElementById('setupError');
+
+            errBox.style.display = 'none';
+
+            if (pass.length < 6) {
+                errBox.textContent = 'Password must be at least 6 characters long.';
+                errBox.style.display = 'block';
+                return;
+            }
+            if (pass !== confirm) {
+                errBox.textContent = 'Passwords do not match. Please verify.';
+                errBox.style.display = 'block';
+                return;
+            }
+            if (!/^\d{6}$/.test(totpCode)) {
+                errBox.textContent = 'Please enter the 6-digit code shown in Google Authenticator.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const isValid = await verifyTOTP(totpCode, pendingSetupSecret);
+            if (!isValid) {
+                errBox.textContent = 'Invalid 6-digit code! Ensure your phone clock is accurate and try the latest code.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const passHash = await hashPassword(pass);
+            const authData = {
+                passwordHash: passHash,
+                totpSecret: pendingSetupSecret,
+                configuredAt: new Date().toISOString()
+            };
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+            sessionStorage.setItem(SESSION_KEY, 'active');
+
+            document.getElementById('authOverlay').style.display = 'none';
+            loadDashboardData();
+        }
+
+        // 2. Render Login View (Password + Google Authenticator)
+        function renderLoginView() {
+            const container = document.getElementById('authCardContent');
+            container.innerHTML = `
+                <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h2 class="auth-title">Admin Command Center</h2>
+                <p class="auth-sub">Enter your master password & Google Authenticator code.</p>
+
+                <div style="text-align: left; margin-bottom: 14px;">
+                    <label class="auth-label"><i class="fa-solid fa-key"></i> Master Password</label>
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password" onkeypress="if(event.key==='Enter') executeLogin()">
+                </div>
+
+                <div style="text-align: left; margin-bottom: 18px;">
+                    <label class="auth-label"><i class="fa-solid fa-mobile-screen"></i> Google Authenticator 6-Digit Code</label>
+                    <input type="text" id="loginTotp" class="auth-input" maxlength="6" placeholder="000 000" style="letter-spacing: 6px; font-weight: 700; font-size: 20px; text-align:center;" onkeypress="if(event.key==='Enter') executeLogin()">
+                </div>
+
+                <button class="btn-glow" type="button" onclick="executeLogin()">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Verify & Sign In
+                </button>
+
+                <div class="auth-error" id="loginError" style="display:none; margin-top:12px;"></div>
+
+                <div style="margin-top: 15px;">
+                    <button class="btn-text-link" type="button" onclick="promptResetSecurity()">
+                        <i class="fa-solid fa-rotate-left"></i> Reconfigure Password / 2FA
+                    </button>
+                </div>
+            `;
+        }
+
+        async function executeLogin() {
+            const pass = document.getElementById('loginPassword').value.trim();
+            const totpCode = document.getElementById('loginTotp').value.trim();
+            const errBox = document.getElementById('loginError');
+            errBox.style.display = 'none';
+
+            const authData = getStoredAuth();
+            if (!authData) {
+                renderSetupView();
+                return;
+            }
+
+            if (!pass) {
+                errBox.textContent = 'Please enter your master password.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const inputHash = await hashPassword(pass);
+            if (inputHash !== authData.passwordHash) {
+                errBox.textContent = 'Incorrect master password.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            if (!/^\d{6}$/.test(totpCode)) {
+                errBox.textContent = 'Enter the 6-digit code from Google Authenticator.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const isTotpValid = await verifyTOTP(totpCode, authData.totpSecret);
+            if (!isTotpValid) {
+                errBox.textContent = 'Invalid 6-digit authenticator code. Check your app and try the current code.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            sessionStorage.setItem(SESSION_KEY, 'active');
+            document.getElementById('authOverlay').style.display = 'none';
+            loadDashboardData();
+        }
+
+        function promptResetSecurity() {
+            const confirmReset = confirm('Would you like to reset your password and Google Authenticator? You will be guided to set a new password and scan a new QR code.');
+            if (confirmReset) {
+                localStorage.removeItem(AUTH_STORAGE_KEY);
+                sessionStorage.removeItem(SESSION_KEY);
+                renderSetupView();
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem(SESSION_KEY);
+            renderLoginView();
+            document.getElementById('authOverlay').style.display = 'flex';
+        }
+
+        function openSecurityModal() {
+            const authData = getStoredAuth();
+            const issuer = encodeURIComponent('OfoniTech AI Academy');
+            const account = encodeURIComponent('Admin');
+            const secret = authData ? authData.totpSecret : 'NOT_SET';
+            const otpAuthUri = `otpauth://totp/${issuer}:${account}?secret=${secret}&issuer=${issuer}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(otpAuthUri)}&bgcolor=ffffff`;
+
+            document.getElementById('securityModalBody').innerHTML = `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--bg-card-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center;">
+                    <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px;">Your Google Authenticator QR Code</div>
+                    <div class="qr-card">
+                        <img src="${qrUrl}" alt="Google Authenticator QR Code">
+                    </div>
+                    <div class="secret-box" style="margin-top: 8px;">
+                        <span>${secret}</span>
+                        <button class="btn-copy-secret" type="button" onclick="copySecretKey('${secret}')">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Scan this on any new device using Google Authenticator.</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--bg-card-border); border-radius: 12px; padding: 16px;">
+                    <div style="font-weight: 700; font-size: 14px; margin-bottom: 12px;"><i class="fa-solid fa-key"></i> Change Master Password</div>
+                    <label class="auth-label">Current Password</label>
+                    <input type="password" id="secCurrentPass" class="auth-input" placeholder="Enter current password">
+                    <label class="auth-label">New Password</label>
+                    <input type="password" id="secNewPass" class="auth-input" placeholder="Enter new password (min 6 chars)">
+                    <button class="btn-glow" type="button" onclick="updateMasterPassword()" style="padding: 10px; font-size: 14px; margin-top: 6px;">
+                        Update Password
+                    </button>
+                    <div id="secPassMsg" style="display:none; font-size: 12px; margin-top: 8px;"></div>
+                </div>
+            `;
+            document.getElementById('securityModal').classList.add('active');
+        }
+
+        async function updateMasterPassword() {
+            const current = document.getElementById('secCurrentPass').value.trim();
+            const next = document.getElementById('secNewPass').value.trim();
+            const msg = document.getElementById('secPassMsg');
+            msg.style.display = 'block';
+
+            const authData = getStoredAuth();
+            if (!authData) return;
+
+            const curHash = await hashPassword(current);
+            if (curHash !== authData.passwordHash) {
+                msg.style.color = '#EF4444';
+                msg.textContent = 'Current password is incorrect.';
+                return;
+            }
+            if (next.length < 6) {
+                msg.style.color = '#EF4444';
+                msg.textContent = 'New password must be at least 6 characters.';
+                return;
+            }
+
+            authData.passwordHash = await hashPassword(next);
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+            msg.style.color = '#10B981';
+            msg.textContent = 'Password successfully updated!';
+            setTimeout(() => closeSecurityModal(), 1500);
+        }
+
+        function closeSecurityModal() {
+            document.getElementById('securityModal').classList.remove('active');
         }
 
         function showTab(tabName) {
