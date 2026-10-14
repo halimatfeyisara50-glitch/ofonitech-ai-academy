@@ -45,7 +45,7 @@ async function fetchPrograms() {
             renderPrograms();
         }
     } catch (err) {
-        grid.innerHTML = `<div class="error-msg">Failed to connect to Node.js server. Please ensure the server is running.</div>`;
+        grid.innerHTML = `<div class="error-msg">Unable to load tuition programs. Please check your connection and refresh.</div>`;
     }
 }
 
@@ -253,7 +253,7 @@ async function handleEnrollSubmit(e) {
     const resultDiv = document.getElementById('enrollmentResult');
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting to Node.js...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reserving Your Slot...';
 
     const payload = {
         fullName: document.getElementById('m_name').value,
@@ -319,10 +319,10 @@ async function handleEnrollSubmit(e) {
             alert(`Error: ${res.message}`);
         }
     } catch (err) {
-        alert('Network error communicating with Node.js backend.');
+        alert('Network error submitting registration. Please try again.');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Submit & Reserve Slot (Node.js API)';
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Submit & Reserve Slot';
     }
 }
 
