@@ -40,75 +40,125 @@ const MONNIFY_CONFIG = {
  * Launch Monnify inline checkout modal
  */
 function initiateMonnifyPayment(studentId, fullName, email, phone, amount, programTitle) {
+    const payBtn = document.getElementById('payMonnifyBtn');
+
+    // 1. Ensure Monnify SDK is loaded; dynamically inject if missing
     if (typeof MonnifySDK === 'undefined' || typeof MonnifySDK.initialize !== 'function') {
-        alert('Monnify secure checkout SDK is loading. Please check your internet connection and try again.');
+        if (payBtn) {
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting to Monnify...';
+        }
+
+        const existingScript = document.querySelector('script[src*="monnify.js"]');
+        if (existingScript) existingScript.remove();
+
+        const script = document.createElement('script');
+        script.src = 'https://sdk.monnify.com/plugin/monnify.js';
+        script.onload = () => {
+            console.log('⚡ Monnify SDK loaded dynamically.');
+            initiateMonnifyPayment(studentId, fullName, email, phone, amount, programTitle);
+        };
+        script.onerror = () => {
+            alert('Unable to load Monnify checkout gateway. Please check your internet connection or disable ad-blockers and try again.');
+            if (payBtn) {
+                payBtn.disabled = false;
+                payBtn.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Retry Payment with Monnify`;
+            }
+        };
+        document.body.appendChild(script);
         return;
     }
 
-    // Unique transaction reference
-    const paymentReference = `OFONI-MNFY-${studentId}-${Date.now()}`;
-    const cleanName = decodeURIComponent(fullName);
-    const cleanTitle = decodeURIComponent(programTitle);
-
-    const payBtn = document.getElementById('payMonnifyBtn');
-    if (payBtn) {
-        payBtn.disabled = true;
-        payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Initializing Monnify Gateway...';
+    // 2. Sanitize Inputs for Monnify API
+    const digitsOnly = (phone || '').replace(/[^0-9]/g, '');
+    let cleanPhone = digitsOnly.length >= 10 ? digitsOnly : '08012345678';
+    if (cleanPhone.startsWith('234') && cleanPhone.length === 13) {
+        cleanPhone = '0' + cleanPhone.slice(3);
     }
 
-    MonnifySDK.initialize({
-        amount: Number(amount),
-        currency: MONNIFY_CONFIG.currency,
-        reference: paymentReference,
-        customerFullName: cleanName,
-        customerEmail: email,
-        customerMobileNumber: phone || '08000000000',
-        apiKey: MONNIFY_CONFIG.apiKey,
-        contractCode: MONNIFY_CONFIG.contractCode,
-        paymentDescription: `Tuition payment for ${cleanTitle} - Student ID: ${studentId}`,
-        isTestMode: MONNIFY_CONFIG.isTestMode,
-        metadata: {
-            studentId: studentId,
-            programTitle: cleanTitle,
-            academy: 'OfoniTech AI Academy'
-        },
-        onLoadStart: () => {
-            console.log('Monnify checkout overlay loading...');
-        },
-        onLoadComplete: () => {
-            console.log('Monnify checkout ready.');
-            if (payBtn) {
-                payBtn.disabled = false;
-                payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Complete Payment (₦${Number(amount).toLocaleString()})`;
-            }
-        },
-        onComplete: async function (response) {
-            console.log('🎉 Monnify transaction response:', response);
+    const cleanName = decodeURIComponent(fullName || 'Student').trim();
+    const cleanTitle = decodeURIComponent(programTitle || 'AI Program').trim();
+    const paymentReference = `OFONI-${studentId}-${Date.now().toString().slice(-6)}`;
 
-            // Monnify status codes: PAID, SUCCESS, OVERPAID, PARTIALLY_PAID
-            const isSuccess = response.status === 'SUCCESS' || 
-                              response.status === 'PAID' || 
-                              response.paymentStatus === 'PAID' || 
-                              response.paymentStatus === 'SUCCESS';
+    if (payBtn) {
+        payBtn.disabled = true;
+        payBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening Secure Checkout...';
+    }
 
-            if (isSuccess) {
-                await handleMonnifySuccess(studentId, response, cleanTitle);
-            } else {
-                alert(`Transaction ended with status: ${response.status || response.paymentStatus || 'INCOMPLETE'}`);
+    // 3. Safety timeout: If modal takes longer than 9s (due to slow network/CDN), re-enable button
+    const safetyTimer = setTimeout(() => {
+        if (payBtn && payBtn.disabled) {
+            payBtn.disabled = false;
+            payBtn.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Reopen Monnify Checkout`;
+        }
+    }, 9000);
+
+    try {
+        MonnifySDK.initialize({
+            amount: Number(amount),
+            currency: MONNIFY_CONFIG.currency,
+            reference: paymentReference,
+            customerFullName: cleanName,
+            customerEmail: email,
+            customerMobileNumber: cleanPhone,
+            apiKey: MONNIFY_CONFIG.apiKey,
+            contractCode: MONNIFY_CONFIG.contractCode,
+            paymentDescription: `Tuition: ${cleanTitle.slice(0, 30)} (${studentId})`,
+            isTestMode: MONNIFY_CONFIG.isTestMode,
+            paymentMethods: ["CARD", "ACCOUNT_TRANSFER", "USSD"],
+            metadata: {
+                studentId: studentId,
+                programTitle: cleanTitle,
+                academy: 'OfoniTech AI Academy'
+            },
+            onLoadStart: () => {
+                console.log('⚡ Monnify checkout overlay loading...');
+            },
+            onLoadComplete: () => {
+                clearTimeout(safetyTimer);
+                console.log('⚡ Monnify checkout modal visible.');
+                if (payBtn) {
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₦${Number(amount).toLocaleString()} via Monnify`;
+                }
+            },
+            onComplete: async function (response) {
+                clearTimeout(safetyTimer);
+                console.log('🎉 Monnify transaction response:', response);
+
+                const isSuccess = response.status === 'SUCCESS' || 
+                                  response.status === 'PAID' || 
+                                  response.paymentStatus === 'PAID' || 
+                                  response.paymentStatus === 'SUCCESS';
+
+                if (isSuccess) {
+                    await handleMonnifySuccess(studentId, response, cleanTitle);
+                } else {
+                    alert(`Transaction ended with status: ${response.status || response.paymentStatus || 'INCOMPLETE'}`);
+                    if (payBtn) {
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₦${Number(amount).toLocaleString()} via Monnify`;
+                    }
+                }
+            },
+            onClose: function (data) {
+                clearTimeout(safetyTimer);
+                console.log('Monnify payment modal closed by user', data);
                 if (payBtn) {
                     payBtn.disabled = false;
                     payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₦${Number(amount).toLocaleString()} via Monnify`;
                 }
             }
-        },
-        onClose: function (data) {
-            console.log('Monnify payment modal closed by user', data);
-            if (payBtn) {
-                payBtn.disabled = false;
-                payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₦${Number(amount).toLocaleString()} via Monnify`;
-            }
+        });
+    } catch (err) {
+        clearTimeout(safetyTimer);
+        console.error('Monnify initialization error:', err);
+        alert('Error launching Monnify checkout: ' + err.message);
+        if (payBtn) {
+            payBtn.disabled = false;
+            payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Pay ₦${Number(amount).toLocaleString()} via Monnify`;
         }
-    });
+    }
 }
 
 /**
