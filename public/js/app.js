@@ -1,6 +1,6 @@
 /**
  * OFONITECH AI ACADEMY - FRONTEND CONTROLLER
- * Interacts asynchronously with the Node.js / Express Server REST APIs
+ * Client-side interactive controller and payment connector
  */
 
 let state = {
@@ -12,13 +12,13 @@ let state = {
 
 // Initialize Application on DOM Content Loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 OfoniTech AI Academy client connected to Node.js engine.');
+    console.log('🚀 OfoniTech AI Academy client ready.');
     await fetchStats();
     await fetchPrograms();
     await fetchFaqs();
 });
 
-// 1. Fetch Academy Live Stats from Node API
+// 1. Fetch Academy Live Stats
 async function fetchStats() {
     try {
         const response = await fetch('/api/stats');
@@ -34,7 +34,7 @@ async function fetchStats() {
     }
 }
 
-// 2. Fetch Programs & Pricing Matrix from Node API
+// 2. Fetch Programs & Pricing Matrix
 async function fetchPrograms() {
     const grid = document.getElementById('program-grid');
     try {
@@ -125,7 +125,7 @@ function handleModeToggle() {
     renderPrograms();
 }
 
-// Apply Promo Code via Node API
+// Apply Promo Code
 async function applyPromoCode() {
     const input = document.getElementById('promoInput').value.trim();
     const feedback = document.getElementById('promoFeedback');
@@ -159,11 +159,11 @@ async function applyPromoCode() {
         }
     } catch (err) {
         feedback.className = 'promo-feedback error';
-        feedback.textContent = 'Failed to validate promo code with Node server.';
+        feedback.textContent = 'Unable to validate promo code. Please try again.';
     }
 }
 
-// 3. Fetch FAQs from Node API
+// 3. Fetch FAQs
 async function fetchFaqs() {
     const accordion = document.getElementById('faq-accordion');
     try {
@@ -213,7 +213,7 @@ function closeEnrollModal() {
     modal.classList.remove('active');
 }
 
-// Recalculate Modal Pricing dynamically via Node server
+// Recalculate Modal Pricing dynamically
 async function recalculateModalPrice() {
     const programId = document.getElementById('m_program').value;
     const mode = document.getElementById('m_mode').value;
@@ -246,7 +246,7 @@ async function recalculateModalPrice() {
     }
 }
 
-// Handle Modal Enrollment Submission to Node API
+// Handle Modal Enrollment Submission
 async function handleEnrollSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById('enrollSubmitBtn');
@@ -365,10 +365,10 @@ async function handleContactSubmit(e) {
         }
     } catch (err) {
         status.style.color = '#F87171';
-        status.textContent = '❌ Failed to connect to Node contact API.';
+        status.textContent = '❌ Failed to send message. Please try again.';
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message (via Node API)';
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
     }
 }
 
