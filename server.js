@@ -585,8 +585,15 @@ app.patch('/api/admin/inquiries/:id', async (req, res) => {
   res.json({ success: true, message: `Inquiry status updated to ${status}.` });
 });
 
-// Admin Dashboard UI Route
-app.get('/admin', (req, res) => {
+// Admin Dashboard UI Route & Subdomain Support
+app.use((req, res, next) => {
+  if (req.hostname.startsWith('admin.') && (req.path === '/' || req.path === '/index.html')) {
+    return res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+  }
+  next();
+});
+
+app.get(['/admin', '/admin/*'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 

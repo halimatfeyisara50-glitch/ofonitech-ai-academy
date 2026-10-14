@@ -6,23 +6,20 @@ export async function onRequest(context) {
 
   // 1. If accessing via admin subdomain (e.g. admin.ofonitechaiacademy.online)
   if (hostname.startsWith('admin.')) {
-    // If accessing root or index.html, rewrite to admin.html
+    // If accessing root or index.html, serve /admin content
     if (url.pathname === '/' || url.pathname === '/index.html') {
-      const adminReq = new Request(new URL('/admin.html', url), context.request);
-      if (context.env && context.env.ASSETS) {
-        return context.env.ASSETS.fetch(adminReq);
+      try {
+        if (context.env && context.env.ASSETS) {
+          const res = await context.env.ASSETS.fetch(new Request(new URL('/admin', url.origin), context.request));
+          if (res.status === 200) {
+            return res;
+          }
+        }
+      } catch (e) {
+        console.warn('ASSETS fetch fallback:', e);
       }
-      return context.next(adminReq);
+      return Response.redirect(`${url.origin}/admin`, 302);
     }
-  }
-
-  // 2. If accessing /admin or /admin/ directly on main domain
-  if (url.pathname === '/admin' || url.pathname === '/admin/') {
-    const adminReq = new Request(new URL('/admin.html', url), context.request);
-    if (context.env && context.env.ASSETS) {
-      return context.env.ASSETS.fetch(adminReq);
-    }
-    return context.next(adminReq);
   }
 
   return context.next();

@@ -119,12 +119,13 @@ export default {
     const hostname = url.hostname.toLowerCase();
     if (hostname.startsWith('admin.') && (path === '/' || path === '/index.html')) {
       if (env && env.ASSETS) {
-        return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
+        return env.ASSETS.fetch(new Request(new URL('/admin', request.url), request));
       }
+      return Response.redirect(`${url.origin}/admin`, 302);
     }
     if (path === '/admin' || path === '/admin/') {
       if (env && env.ASSETS) {
-        return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
+        return env.ASSETS.fetch(new Request(new URL('/admin', request.url), request));
       }
     }
 
