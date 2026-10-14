@@ -115,6 +115,19 @@ export default {
       return new Response(null, { headers: jsonHeaders });
     }
 
+    // Admin subdomain & /admin route routing
+    const hostname = url.hostname.toLowerCase();
+    if (hostname.startsWith('admin.') && (path === '/' || path === '/index.html')) {
+      if (env && env.ASSETS) {
+        return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
+      }
+    }
+    if (path === '/admin' || path === '/admin/') {
+      if (env && env.ASSETS) {
+        return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
+      }
+    }
+
     // 1. GET /api/programs
     if (path === '/api/programs' && request.method === 'GET') {
       return new Response(JSON.stringify({ success: true, data: programsData }), { headers: jsonHeaders });
