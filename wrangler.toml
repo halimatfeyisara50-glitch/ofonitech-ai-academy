@@ -1,3 +1,9 @@
 name = "ofonitech-ai-academy"
-pages_build_output_dir = "public"
+main = "index.js"
 compatibility_date = "2026-09-29"
+
+pages_build_output_dir = "public"
+
+[assets]
+directory = "public"
+

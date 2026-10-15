@@ -169,7 +169,7 @@ export default {
       if (env && env.ASSETS) {
         return env.ASSETS.fetch(new Request(new URL('/admin', request.url), request));
       }
-      return Response.redirect(`${url.origin}/admin`, 302);
+      return Response.redirect(`${url.origin}/admin/`, 302);
     }
     if (path === '/admin' || path === '/admin/') {
       if (env && env.ASSETS) {
