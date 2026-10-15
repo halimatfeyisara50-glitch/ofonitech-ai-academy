@@ -6,8 +6,8 @@ const programsData = [
     title: '3-Month Intensive Track',
     durationWeeks: 12,
     tagline: 'Rapid deployment track for aspiring developers & AI video creators.',
-    onlinePrice: 100,
-    hybridPrice: 100,
+    onlinePrice: 70000,
+    hybridPrice: 100000,
     currency: 'NGN',
     symbol: '₦',
     popular: false,
@@ -24,12 +24,60 @@ const programsData = [
     ]
   },
   {
+    id: 'virtual-assistant',
+    title: 'Virtual Assistant Track',
+    durationWeeks: 12,
+    tagline: 'Master executive remote assistance, AI productivity tools, calendar, email & client management.',
+    onlinePrice: 70000,
+    hybridPrice: 100000,
+    currency: 'NGN',
+    symbol: '₦',
+    popular: false,
+    courses: [
+      { name: 'AI Productivity & Office Automations', icon: 'robot', desc: 'Leverage ChatGPT, Claude, Notion AI, Google Workspace, and Zapier for 10x output.' },
+      { name: 'Executive Calendar, Inbox & Communications', icon: 'envelope-open-text', desc: 'Professional email correspondence, calendar scheduling, Slack, and Zoom coordination.' },
+      { name: 'Project Management & CRM Tools', icon: 'users-gear', desc: 'Asana, Trello, ClickUp, HubSpot CRM, and customer ticketing systems.' },
+      { name: 'Remote Client Acquisition & Invoicing', icon: 'briefcase', desc: 'Upwork, LinkedIn optimization, international client contracts, and global payment setups.' }
+    ],
+    perks: [
+      'Live Instructor-Led Sessions & Simulated Client Scenarios',
+      'Portfolio of Real-World Executive Deliverables',
+      'Upwork & International Remote Job Acquisition Blueprint',
+      'Certificate of Completion',
+      'Alumni Community & Exclusive Job Board'
+    ]
+  },
+  {
+    id: 'social-media-manager',
+    title: 'Social Media Manager Track',
+    durationWeeks: 12,
+    tagline: 'Master brand storytelling, AI-powered viral content creation, short-form video, ads & analytics.',
+    onlinePrice: 70000,
+    hybridPrice: 100000,
+    currency: 'NGN',
+    symbol: '₦',
+    popular: false,
+    courses: [
+      { name: 'AI Content Creation & Creative Design', icon: 'palette', desc: 'Canva Pro design systems, Midjourney visual asset creation, and brand storytelling.' },
+      { name: 'Viral Short-Form Video Production', icon: 'video', desc: 'Scripting, filming, and CapCut AI editing for Instagram Reels, TikTok, and YouTube Shorts.' },
+      { name: 'Content Strategy & Calendar Management', icon: 'calendar-days', desc: 'Multi-platform content scheduling with Metricool, Buffer, Meta Business Suite, and Notion.' },
+      { name: 'Paid Social Ads & Growth Analytics', icon: 'chart-line', desc: 'Meta Ads Manager campaigns, lead generation, audience targeting, and ROI performance reports.' }
+    ],
+    perks: [
+      'Live Campaign Management & Brand Case Studies',
+      'Portfolio of 5 Complete Brand Social Media Kits',
+      'Agency-Grade Client Pitch & Retainer Templates',
+      'Certificate of Completion',
+      'Alumni Community & Mentorship Access'
+    ]
+  },
+  {
     id: '6-month',
     title: '6-Month Mastery Track',
     durationWeeks: 24,
     tagline: 'Full-stack engineering & end-to-end AI automation systems mastery.',
-    onlinePrice: 100,
-    hybridPrice: 100,
+    onlinePrice: 150000,
+    hybridPrice: 200000,
     currency: 'NGN',
     symbol: '₦',
     popular: true,

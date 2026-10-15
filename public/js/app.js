@@ -78,7 +78,7 @@ function renderPrograms() {
             <div class="program-card ${program.popular ? 'popular-card' : ''}">
                 ${program.popular ? '<div class="popular-badge">MOST POPULAR TRACK</div>' : ''}
                 <div class="p-header">
-                    <span class="p-duration">${program.durationWeeks} Weeks (${program.id === '3-month' ? '3 Months' : '6 Months'})</span>
+                    <span class="p-duration">${program.durationWeeks} Weeks (${Math.round(program.durationWeeks / 4)} Months)</span>
                     <h3 class="p-title">${program.title}</h3>
                     <p class="p-tagline">${program.tagline}</p>
                 </div>
@@ -106,7 +106,7 @@ function renderPrograms() {
                 </ul>
 
                 <button class="btn btn-block ${program.popular ? 'btn-primary' : 'btn-glass'}" onclick="openEnrollModal('${program.id}')">
-                    <i class="fa-solid fa-user-plus"></i> Enroll in ${program.id === '3-month' ? '3-Month' : '6-Month Track'}
+                    <i class="fa-solid fa-user-plus"></i> Enroll in ${program.title}
                 </button>
             </div>
         `;

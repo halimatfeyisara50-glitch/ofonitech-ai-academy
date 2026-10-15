@@ -79,7 +79,7 @@
                 </h1>
 
                 <p class="hero-subtitle">
-                    Transform your career with <strong>OfoniTech AI Academy</strong>'s high-impact 3-Month and 6-Month intensive tracks. Choose <strong>Online Learning</strong> or study at our state-of-the-art <strong>Physical Campus Hubs</strong> in Nigeria.
+                    Transform your career with <strong>OfoniTech AI Academy</strong>'s high-impact intensive tracks, including <strong>Virtual Assistant</strong>, <strong>Social Media Manager</strong>, 3-Month Intensive, and 6-Month Mastery. Choose <strong>Online Learning</strong> or study at our state-of-the-art <strong>Physical Campus Hubs</strong> in Nigeria.
                 </p>
 
                 <div class="hero-cta-group">
@@ -158,6 +158,8 @@
                     <button class="tab-btn active" onclick="switchTrackTab('all')">All Modules</button>
                     <button class="tab-btn" onclick="switchTrackTab('ai-video')">AI Video & Media</button>
                     <button class="tab-btn" onclick="switchTrackTab('web-app')">Web & Mobile Dev</button>
+                    <button class="tab-btn" onclick="switchTrackTab('va')">Virtual Assistant</button>
+                    <button class="tab-btn" onclick="switchTrackTab('smm')">Social Media Manager</button>
                     <button class="tab-btn" onclick="switchTrackTab('automation')">AI Automation (n8n/Make)</button>
                 </div>
 
@@ -204,7 +206,35 @@
                         </ul>
                     </div>
 
-                    <!-- Course Module 4 -->
+                    <!-- Course Module 4: Virtual Assistant -->
+                    <div class="module-card" data-category="va">
+                        <div class="module-icon"><i class="fa-solid fa-headset"></i></div>
+                        <div class="module-tag">Virtual Assistant Track (12 Weeks)</div>
+                        <h3 class="module-title">Executive Remote Assistance & AI Productivity</h3>
+                        <p class="module-desc">Master modern executive assistance using AI workflows, digital communications, scheduling, CRM administration, and remote client management for global earnings.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> ChatGPT & Claude for Fast Research, Briefings & Correspondence</li>
+                            <li><i class="fa-solid fa-check"></i> Google Workspace, Notion, Slack & Zoom Executive Administration</li>
+                            <li><i class="fa-solid fa-check"></i> Asana, Trello & HubSpot CRM Workflow Management</li>
+                            <li><i class="fa-solid fa-check"></i> International Freelance Contracts, Upwork & Global Payments</li>
+                        </ul>
+                    </div>
+
+                    <!-- Course Module 5: Social Media Manager -->
+                    <div class="module-card" data-category="smm">
+                        <div class="module-icon"><i class="fa-solid fa-hashtag"></i></div>
+                        <div class="module-tag">Social Media Manager Track (12 Weeks)</div>
+                        <h3 class="module-title">AI-Powered Social Media Management & Brand Growth</h3>
+                        <p class="module-desc">Create high-converting viral content, orchestrate multi-platform publishing schedules, run profitable paid social ads, and deliver executive-grade growth reports.</p>
+                        <ul class="module-checklist">
+                            <li><i class="fa-solid fa-check"></i> Canva Pro & Midjourney Brand Asset Creation</li>
+                            <li><i class="fa-solid fa-check"></i> Viral Reels, TikTok & Shorts Scripting & CapCut AI Editing</li>
+                            <li><i class="fa-solid fa-check"></i> Multi-Platform Calendars (Metricool, Buffer, Meta Suite)</li>
+                            <li><i class="fa-solid fa-check"></i> Meta Ads Manager Campaigns, Analytics & Client Retainers</li>
+                        </ul>
+                    </div>
+
+                    <!-- Course Module 6 -->
                     <div class="module-card highlight-card" data-category="automation">
                         <div class="module-badge">EXCLUSIVE TO 6-MONTH TRACK</div>
                         <div class="module-icon"><i class="fa-solid fa-cpu"></i></div>
@@ -377,8 +407,10 @@
                     <div class="form-group">
                         <label for="m_program">Select Program Track *</label>
                         <select id="m_program" class="form-control" onchange="recalculateModalPrice()">
-                            <option value="3-month">3-Month Intensive Track (12 Weeks)</option>
-                            <option value="6-month" selected>6-Month Mastery Track (24 Weeks)</option>
+                            <option value="3-month">3-Month Intensive Track (12 Weeks) - ₦70,000</option>
+                            <option value="virtual-assistant" selected>Virtual Assistant Track (12 Weeks) - ₦70,000</option>
+                            <option value="social-media-manager">Social Media Manager Track (12 Weeks) - ₦70,000</option>
+                            <option value="6-month">6-Month Mastery Track (24 Weeks) - ₦150,000</option>
                         </select>
                     </div>
 
@@ -395,16 +427,16 @@
                 <div class="tuition-summary-box">
                     <div class="summary-row">
                         <span>Base Tuition:</span>
-                        <span id="modalBasePrice" class="price-val">₦100</span>
+                        <span id="modalBasePrice" class="price-val">₦70,000</span>
                     </div>
                     <div class="summary-row discount" id="modalDiscountRow" style="display: none;">
                         <span>Promo Discount:</span>
-                        <span id="modalDiscountPrice" class="price-val">-₦20</span>
+                        <span id="modalDiscountPrice" class="price-val">-₦0</span>
                     </div>
                     <div class="summary-divider"></div>
                     <div class="summary-row total">
                         <span>Total Payable Tuition:</span>
-                        <span id="modalFinalPrice" class="total-price-val">₦100</span>
+                        <span id="modalFinalPrice" class="total-price-val">₦70,000</span>
                     </div>
                 </div>
 
@@ -446,10 +478,10 @@
                 <div class="footer-col">
                     <h4>Programs</h4>
                     <ul>
-                        <li><a href="#tuition">3-Month Intensive</a></li>
-                        <li><a href="#tuition">6-Month Mastery</a></li>
-                        <li><a href="#curriculum">AI Video Generation</a></li>
-                        <li><a href="#curriculum">Web & App Engineering</a></li>
+                        <li><a href="#tuition">3-Month Intensive (₦70k)</a></li>
+                        <li><a href="#tuition">Virtual Assistant Track (₦70k)</a></li>
+                        <li><a href="#tuition">Social Media Manager Track (₦70k)</a></li>
+                        <li><a href="#tuition">6-Month Mastery (₦150k)</a></li>
                         <li><a href="#curriculum">AI Automation (n8n/Make)</a></li>
                     </ul>
                 </div>

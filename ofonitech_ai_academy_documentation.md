@@ -28,7 +28,9 @@ Tuition fees are displayed in Nigerian Naira (**₦**):
 | Program Track | Duration | Online Only | Hybrid (Online + Physical Hub) | Included Courses |
 | :--- | :--- | :--- | :--- | :--- |
 | **3-Month Intensive** | 12 Weeks | **₦70,000** | **₦100,000** | • AI Video Generation & Editing<br>• Web Application Development<br>• App Development Fundamentals |
-| **6-Month Mastery** | 24 Weeks | **₦150,000** | **₦200,000** | • AI Video Generation & Editing<br>• Web Application Development<br>• App Development<br>• **AI Automation Systems (n8n, Make.com, Zapier)** |
+| **Virtual Assistant Track** | 12 Weeks | **₦70,000** | **₦100,000** | • AI Productivity & Office Automations<br>• Executive Calendar, Inbox & Communications<br>• Project Management & CRM Tools<br>• Remote Client Acquisition & Invoicing |
+| **Social Media Manager Track** | 12 Weeks | **₦70,000** | **₦100,000** | • AI Content Creation & Creative Design<br>• Viral Short-Form Video Production<br>• Content Strategy & Calendar Management<br>• Paid Social Ads & Growth Analytics |
+| **6-Month Mastery** | 24 Weeks | **₦150,000** | **₦200,000** | • AI Video Generation & Editing<br>• Full-Stack Web Development<br>• Mobile App Engineering<br>• **AI Automation Systems (n8n, Make.com, Zapier)** |
 
 ---
 
