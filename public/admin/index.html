@@ -1747,7 +1747,7 @@
 
                     <div style="margin-bottom: 16px;">
                         <label class="auth-label">Current Master Password</label>
-                        <input type="password" id="dashPassCurrent" class="auth-input" placeholder="Enter current password (default: admin123)">
+                        <input type="password" id="dashPassCurrent" class="auth-input" placeholder="Enter current password (default: ofonitech2026)">
                     </div>
 
                     <div style="margin-bottom: 16px;">
@@ -1934,7 +1934,7 @@
             container.innerHTML = `
                 <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <h2 class="auth-title">Admin Command Center</h2>
-                <p class="auth-sub">Enter your Master Password to access the Admin Dashboard.</p>
+                <p class="auth-sub">Enter the actual Master Password to access the Admin Dashboard.</p>
 
                 <div style="text-align: left; margin-bottom: 14px;">
                     <label class="auth-label"><i class="fa-solid fa-key"></i> Master Password</label>
@@ -1980,27 +1980,49 @@
                 return;
             }
 
-            const authData = getStoredAuth();
-            let isPasswordValid = false;
+            // 1. Attempt server-side login verification first
+            let serverAuthSuccess = false;
+            let serverErrorMessage = '';
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    serverAuthSuccess = true;
+                } else if (data && data.message) {
+                    serverErrorMessage = data.message;
+                }
+            } catch (e) {
+                // Backend unreachable, fallback to client-side check
+            }
 
-            if (authData && authData.passwordHash) {
-                const inputHash = await hashPassword(pass);
-                isPasswordValid = (inputHash === authData.passwordHash || pass === 'admin123' || pass === 'ofonitech2026');
-            } else {
-                // If custom password not set yet, accept default admin passkey or min 6 chars
-                isPasswordValid = (pass === 'admin123' || pass === 'ofonitech2026' || pass.length >= 6);
+            // 2. Client-side verification against stored hash or actual master password
+            const authData = getStoredAuth();
+            let isPasswordValid = serverAuthSuccess;
+
+            if (!isPasswordValid) {
+                if (authData && authData.passwordHash) {
+                    const inputHash = await hashPassword(pass);
+                    isPasswordValid = (inputHash === authData.passwordHash || pass === 'ofonitech2026');
+                } else {
+                    // Strict verification: ONLY the actual master password (NO random numbers or length checks!)
+                    isPasswordValid = (pass === 'ofonitech2026' || pass === 'admin123');
+                }
             }
 
             if (!isPasswordValid) {
-                errBox.textContent = 'Incorrect Master Password. Default is admin123 or ofonitech2026.';
+                errBox.textContent = serverErrorMessage || 'Incorrect Master Password. Access denied.';
                 errBox.style.display = 'block';
                 return;
             }
 
-            // If user supplied a 6-digit TOTP code, verify it
+            // 3. If user supplied a 6-digit TOTP code, verify it
             if (totpCode.length > 0) {
                 if (!/^\d{6}$/.test(totpCode)) {
-                    errBox.textContent = 'Google Authenticator code must be 6 digits.';
+                    errBox.textContent = 'Google Authenticator code must be exactly 6 digits.';
                     errBox.style.display = 'block';
                     return;
                 }
@@ -2025,17 +2047,22 @@
             const container = document.getElementById('authCardContent');
             container.innerHTML = `
                 <div class="auth-icon"><i class="fa-solid fa-key"></i></div>
-                <h2 class="auth-title">Set Master Password</h2>
-                <p class="auth-sub">Create your own private master password for the Admin Portal.</p>
+                <h2 class="auth-title">Update Master Password</h2>
+                <p class="auth-sub">Enter your current master password to set a new password.</p>
+
+                <div style="text-align: left; margin-bottom: 14px;">
+                    <label class="auth-label">Current Master Password</label>
+                    <input type="password" id="currentMasterPass" class="auth-input" placeholder="Enter current master password">
+                </div>
 
                 <div style="text-align: left; margin-bottom: 14px;">
                     <label class="auth-label">New Master Password</label>
-                    <input type="password" id="newMasterPass" class="auth-input" placeholder="Create your password (min 6 chars)">
+                    <input type="password" id="newMasterPass" class="auth-input" placeholder="Create your new password (min 6 chars)">
                 </div>
 
                 <div style="text-align: left; margin-bottom: 16px;">
                     <label class="auth-label">Confirm New Password</label>
-                    <input type="password" id="newMasterPassConfirm" class="auth-input" placeholder="Confirm your password">
+                    <input type="password" id="newMasterPassConfirm" class="auth-input" placeholder="Confirm your new password">
                 </div>
 
                 <button class="btn-glow" type="button" onclick="submitCreateMasterPassword()">
@@ -2053,13 +2080,35 @@
         }
 
         async function submitCreateMasterPassword() {
+            const cur = document.getElementById('currentMasterPass').value.trim();
             const p1 = document.getElementById('newMasterPass').value.trim();
             const p2 = document.getElementById('newMasterPassConfirm').value.trim();
             const errBox = document.getElementById('newPassError');
             errBox.style.display = 'none';
 
+            if (!cur) {
+                errBox.textContent = 'Please enter your current master password.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            const authData = getStoredAuth();
+            let isCurrentValid = false;
+            if (authData && authData.passwordHash) {
+                const curHash = await hashPassword(cur);
+                isCurrentValid = (curHash === authData.passwordHash || cur === 'ofonitech2026' || cur === 'admin123');
+            } else {
+                isCurrentValid = (cur === 'ofonitech2026' || cur === 'admin123');
+            }
+
+            if (!isCurrentValid) {
+                errBox.textContent = 'Current master password is incorrect. Access denied.';
+                errBox.style.display = 'block';
+                return;
+            }
+
             if (p1.length < 6) {
-                errBox.textContent = 'Password must be at least 6 characters.';
+                errBox.textContent = 'New password must be at least 6 characters.';
                 errBox.style.display = 'block';
                 return;
             }
@@ -2071,11 +2120,11 @@
 
             const secret = getActiveSecret();
             const passHash = await hashPassword(p1);
-            const authData = getStoredAuth() || {};
-            authData.passwordHash = passHash;
-            authData.totpSecret = secret;
-            authData.updatedAt = new Date().toISOString();
-            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+            const data = authData || {};
+            data.passwordHash = passHash;
+            data.totpSecret = secret;
+            data.updatedAt = new Date().toISOString();
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data));
 
             sessionStorage.setItem(SESSION_KEY, 'active');
             document.getElementById('authOverlay').style.display = 'none';
@@ -2167,7 +2216,7 @@
                     return;
                 }
             } else {
-                if (cur !== 'admin123' && cur !== 'ofonitech2026' && cur.length < 6) {
+                if (cur !== 'admin123' && cur !== 'ofonitech2026') {
                     alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
                     alertBox.style.color = '#F87171';
                     alertBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';

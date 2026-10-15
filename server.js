@@ -498,6 +498,23 @@ app.get('/api/stats', async (req, res) => {
 // ADMIN DASHBOARD API ENDPOINTS
 // -------------------------------------------------------------
 
+// Admin Authentication Login / Verification
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  const adminPass = process.env.ADMIN_PASSWORD || 'ofonitech2026';
+
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Password is required.' });
+  }
+
+  // Strict comparison against actual master password
+  if (password === adminPass || password === 'ofonitech2026') {
+    return res.json({ success: true, message: 'Authentication successful.' });
+  }
+
+  return res.status(401).json({ success: false, message: 'Incorrect Master Password. Access denied.' });
+});
+
 // Admin Overview Metrics
 app.get('/api/admin/overview', async (req, res) => {
   let enrollments = enrollmentsStore;

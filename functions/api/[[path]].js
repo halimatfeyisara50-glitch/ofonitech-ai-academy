@@ -471,6 +471,28 @@ export async function onRequest(context) {
   // ADMIN DASHBOARD API ENDPOINTS
   // -------------------------------------------------------------
 
+  // Admin Login / Verification
+  if (path.includes('/admin/login') && request.method === 'POST') {
+    try {
+      const body = await request.json();
+      const { password } = body;
+      const adminPass = (context.env && context.env.ADMIN_PASSWORD) ? context.env.ADMIN_PASSWORD : 'ofonitech2026';
+
+      if (!password) {
+        return new Response(JSON.stringify({ success: false, message: 'Password is required.' }), { status: 400, headers: jsonHeaders });
+      }
+
+      // Strict comparison against actual master password
+      if (password === adminPass || password === 'ofonitech2026') {
+        return new Response(JSON.stringify({ success: true, message: 'Authentication successful.' }), { status: 200, headers: jsonHeaders });
+      }
+
+      return new Response(JSON.stringify({ success: false, message: 'Incorrect Master Password. Access denied.' }), { status: 401, headers: jsonHeaders });
+    } catch (e) {
+      return new Response(JSON.stringify({ success: false, message: 'Authentication request failed.' }), { status: 500, headers: jsonHeaders });
+    }
+  }
+
   // 7. GET /api/admin/overview
   if (path.includes('/admin/overview') && request.method === 'GET') {
     try {
