@@ -1228,8 +1228,26 @@ input:checked + .slider:before {
     display: none;
 }
 
-/* Responsiveness & Media Queries */
-@media (max-width: 1024px) {
+/* ==========================================================================
+   RESPONSIVE ARCHITECTURE: PORTRAIT = MOBILE VIEW, LANDSCAPE = PC VIEW
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. MOBILE / PORTRAIT VIEW
+   Applied in Portrait orientation (up to 1024px) or Narrow Screens (<=768px)
+   -------------------------------------------------------------------------- */
+@media screen and (orientation: portrait) and (max-width: 1024px),
+       screen and (max-width: 768px) {
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+
+    .container {
+        padding: 0 1.25rem !important;
+    }
+
+    /* Navbar Mobile Header & Drawer */
     .desktop-only-badge,
     .desktop-only-btn {
         display: none !important;
@@ -1262,11 +1280,11 @@ input:checked + .slider:before {
         top: 100%;
         left: 0;
         right: 0;
-        background: rgba(7, 9, 19, 0.96);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(7, 9, 19, 0.98);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border-bottom: 1px solid var(--border-highlight);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
         flex-direction: column;
         align-items: stretch;
         gap: 0;
@@ -1327,25 +1345,564 @@ input:checked + .slider:before {
         border-top: 1px solid var(--border-color);
     }
 
-    .mobile-drawer-actions .node-badge {
-        justify-content: center;
-        padding: 0.65rem 1rem;
-        font-size: 0.88rem;
+    /* Hero Section Mobile Adaptation */
+    .hero-section {
+        padding: 6rem 0 3rem 0 !important;
     }
 
-    .hero-title { font-size: 2.8rem; }
-    .contact-wrapper { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .badge-pill {
+        font-size: 0.8rem !important;
+        padding: 0.35rem 0.9rem !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+    .hero-title {
+        font-size: clamp(1.85rem, 6.5vw, 2.35rem) !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: 1rem !important;
+        word-break: break-word !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin: 0 auto 2rem auto !important;
+    }
+
+    .hero-cta-group {
+        flex-direction: column !important;
+        gap: 0.8rem !important;
+        width: 100% !important;
+        margin-bottom: 2.5rem !important;
+    }
+
+    .hero-cta-group .btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 0.85rem 1.5rem !important;
+    }
+
+    /* 2x2 Clean Stats Grid in Mobile View */
+    .stats-bar {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1.2rem 1rem !important;
+        padding: 1.35rem 1rem !important;
+        border-radius: var(--radius-md) !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .stat-divider {
+        display: none !important;
+    }
+
+    .stat-number {
+        font-size: 1.65rem !important;
+    }
+
+    .stat-label {
+        font-size: 0.78rem !important;
+    }
+
+    /* Section General */
+    .section {
+        padding: 3.5rem 0 !important;
+    }
+
+    .section-header {
+        margin-bottom: 2.2rem !important;
+    }
+
+    .section-title {
+        font-size: clamp(1.6rem, 5.5vw, 2.1rem) !important;
+        line-height: 1.25 !important;
+    }
+
+    .section-desc {
+        font-size: 0.92rem !important;
+    }
+
+    /* Mode Switcher Capsule */
+    .mode-switcher-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0.6rem !important;
+        padding: 0.6rem 0.9rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: var(--radius-md) !important;
+        margin-top: 1.5rem !important;
+    }
+
+    .switcher-label {
+        font-size: 0.85rem !important;
+    }
+
+    .highlight-badge {
+        font-size: 0.7rem !important;
+        padding: 0.15rem 0.45rem !important;
+    }
+
+    /* Program Cards Grid */
+    .program-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.6rem !important;
+        margin-top: 2rem !important;
+    }
+
+    .program-card {
+        padding: 1.8rem 1.25rem !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .price-main {
+        font-size: 2rem !important;
+    }
+
+    .popular-badge {
+        right: 1.2rem !important;
+        top: -12px !important;
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.7rem !important;
+    }
+
+    /* Curriculum Horizontal Touch-Pill Tabs & Modules */
+    .curriculum-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0.4rem 0.2rem 0.8rem 0.2rem !important;
+        justify-content: flex-start !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        scrollbar-width: none !important;
+    }
+
+    .curriculum-tabs::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .tab-btn {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    .module-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+
+    .module-card {
+        padding: 1.5rem 1.2rem !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .module-title {
+        font-size: 1.15rem !important;
+    }
+
+    /* Hybrid Campus Hub Mobile */
+    .campus-banner {
+        padding: 2rem 1.25rem !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .campus-title {
+        font-size: 1.6rem !important;
+    }
+
+    .campus-desc {
+        font-size: 0.92rem !important;
+        margin-bottom: 1.8rem !important;
+    }
+
+    .facility-features {
+        grid-template-columns: 1fr !important;
+        gap: 1.2rem !important;
+    }
+
+    /* FAQs */
+    .faq-header {
+        padding: 1rem 1.2rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .faq-body {
+        padding: 0 1.2rem 1rem 1.2rem !important;
+        font-size: 0.88rem !important;
+    }
+
+    /* Contact Section */
+    .contact-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    .contact-form-card {
+        padding: 1.6rem 1.25rem !important;
+        border-radius: var(--radius-md) !important;
+    }
+
+    .contact-card {
+        padding: 1rem 1.2rem !important;
+    }
+
+    .c-icon {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1rem !important;
+    }
+
+    .c-val {
+        font-size: 0.92rem !important;
+        word-break: break-word !important;
+    }
+
+    /* Footer Mobile */
+    .footer {
+        padding: 3.5rem 0 1.5rem 0 !important;
+        margin-top: 3rem !important;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2.2rem !important;
+    }
+
+    .footer-desc {
+        max-width: 100% !important;
+        font-size: 0.88rem !important;
+    }
+
+    /* Live Enrollment Modal */
+    .modal-overlay {
+        padding: 0.8rem !important;
+    }
+
+    .modal-card {
+        padding: 1.6rem 1.2rem !important;
+        max-width: 96vw !important;
+        max-height: 92vh !important;
+        border-radius: 18px !important;
+    }
+
+    .modal-close {
+        top: 1rem !important;
+        right: 1rem !important;
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+    .modal-title {
+        font-size: 1.25rem !important;
+    }
+
+    .modal-subtitle {
+        font-size: 0.82rem !important;
+        margin-bottom: 1.2rem !important;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem !important;
+    }
+
+    .form-group label {
+        font-size: 0.82rem !important;
+    }
+
+    .form-control {
+        font-size: 0.9rem !important;
+        padding: 0.65rem 0.85rem !important;
+    }
+
+    .tuition-summary-box {
+        padding: 1rem !important;
+        margin: 1.2rem 0 !important;
+    }
+
+    /* Monnify Custom Modal */
+    .monnify-custom-overlay {
+        padding: 8px !important;
+    }
+
+    .monnify-custom-container {
+        width: 98vw !important;
+        max-width: 480px !important;
+        height: 92vh !important;
+        max-height: 92vh !important;
+        border-radius: 16px !important;
+    }
 }
 
+/* --------------------------------------------------------------------------
+   2. PC / LANDSCAPE VIEW
+   Applied in Landscape orientation (min-width: 641px) or Desktop (min-width: 1025px)
+   Guarantees that rotating a device to Landscape ALWAYS gives the full PC View!
+   -------------------------------------------------------------------------- */
+@media screen and (orientation: landscape) and (min-width: 641px),
+       screen and (min-width: 1025px) {
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
 
-@media (max-width: 768px) {
-    .hero-title { font-size: 2.2rem; }
-    .stats-bar { flex-direction: column; gap: 1.5rem; }
-    .stat-divider { display: none; }
-    .form-grid { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .mode-switcher-container { flex-direction: column; gap: 0.8rem; border-radius: var(--radius-md); }
+    .container {
+        max-width: 1240px !important;
+        margin: 0 auto !important;
+        padding: 0 1.5rem !important;
+    }
+
+    /* Desktop Navigation */
+    .desktop-only-btn {
+        display: inline-flex !important;
+    }
+
+    .mobile-toggle {
+        display: none !important;
+    }
+
+    .nav-links {
+        display: flex !important;
+        position: static !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 1.8rem !important;
+        padding: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+    }
+
+    .nav-link {
+        padding: 0 !important;
+        font-size: 0.95rem !important;
+        border: none !important;
+    }
+
+    .nav-link:hover {
+        background: transparent !important;
+        padding-left: 0 !important;
+        color: var(--text-primary) !important;
+    }
+
+    .nav-mobile-icon {
+        display: none !important;
+    }
+
+    .mobile-drawer-actions {
+        display: none !important;
+    }
+
+    /* Desktop Hero */
+    .hero-section {
+        padding: 8.5rem 0 4.5rem 0 !important;
+        text-align: center !important;
+    }
+
+    .hero-title {
+        font-size: 3.2rem !important;
+        letter-spacing: -1.5px !important;
+    }
+
+    .hero-cta-group {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 1.2rem !important;
+        width: auto !important;
+    }
+
+    .hero-cta-group .btn {
+        width: auto !important;
+    }
+
+    /* Horizontal Desktop Stats Bar */
+    .stats-bar {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-around !important;
+        padding: 1.5rem 2rem !important;
+    }
+
+    .stat-divider {
+        display: block !important;
+    }
+
+    /* Mode Switcher */
+    .mode-switcher-container {
+        display: inline-flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 1.2rem !important;
+        width: auto !important;
+        border-radius: var(--radius-full) !important;
+    }
+
+    /* 2-Column Program Cards Grid */
+    .program-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 2rem !important;
+    }
+
+    /* Curriculum Desktop */
+    .curriculum-tabs {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 0.8rem !important;
+        overflow: visible !important;
+    }
+
+    .module-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.8rem !important;
+    }
+
+    /* Hybrid Campus Hub Desktop */
+    .campus-banner {
+        padding: 3.5rem 3rem !important;
+    }
+
+    .facility-features {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem !important;
+    }
+
+    /* Contact Section Desktop */
+    .contact-wrapper {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 3rem !important;
+    }
+
+    .contact-form-card {
+        padding: 2.5rem !important;
+    }
+
+    /* Footer Desktop */
+    .footer-grid {
+        display: grid !important;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr !important;
+        gap: 3rem !important;
+    }
+
+    /* Enrollment Modal Desktop */
+    .modal-card {
+        padding: 2.5rem !important;
+        max-width: 650px !important;
+    }
+
+    .form-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Compact desktop navbar for phones / small tablets in landscape (641px - 1100px wide) */
+@media screen and (orientation: landscape) and (min-width: 641px) and (max-width: 1100px) {
+    .nav-container {
+        padding: 0 1rem !important;
+        gap: 0.75rem;
+    }
+
+    .brand-logo {
+        flex-shrink: 0;
+        gap: 0.5rem;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .logo-text {
+        font-size: 1.05rem;
+    }
+
+    .logo-text span {
+        font-size: 0.7rem;
+    }
+
+    .nav-links {
+        gap: 1.1rem !important;
+    }
+
+    .nav-links > .nav-link:first-child {
+        display: none !important;
+    }
+
+    .nav-link {
+        font-size: 0.85rem !important;
+        white-space: nowrap;
+    }
+
+    .desktop-only-btn {
+        padding: 0.55rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Compact adjustments for Mobile Landscape Viewports with low height */
+@media screen and (orientation: landscape) and (max-height: 550px) {
+    .hero-section {
+        padding: 5rem 0 2.5rem 0 !important;
+    }
+
+    .hero-title {
+        font-size: 2.2rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .section {
+        padding: 3rem 0 !important;
+    }
+
+    .section-header {
+        margin-bottom: 2rem !important;
+    }
+
+    .stats-bar {
+        padding: 1rem 1.5rem !important;
+        margin-top: 1rem !important;
+    }
+
+    .stat-number {
+        font-size: 1.5rem !important;
+    }
+
+    .modal-card {
+        padding: 1.6rem 2rem !important;
+        max-height: 94vh !important;
+        overflow-y: auto !important;
+    }
+
+    .monnify-custom-container {
+        height: 94vh !important;
+        max-height: 94vh !important;
+    }
 }
 
 /* ==========================================================================

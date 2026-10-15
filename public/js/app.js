@@ -428,3 +428,15 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Auto-reset mobile menu state on orientation change or desktop resize
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        closeMobileMenu();
+    }
+});
+
+window.addEventListener('orientationchange', () => {
+    closeMobileMenu();
+});
+
+

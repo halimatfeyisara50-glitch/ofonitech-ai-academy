@@ -252,6 +252,60 @@
             bottom: 0;
             left: 0;
             z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+
+        .sidebar-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--bg-card-border);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+        }
+
+        .sidebar-header-row .sidebar-brand {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--bg-card-border);
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .sidebar-close-btn:hover {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .sidebar-brand {
@@ -372,6 +426,9 @@
             flex: 1;
             padding: 30px;
             max-width: calc(100vw - 260px);
+            width: calc(100% - 260px);
+            box-sizing: border-box;
+            min-width: 0;
         }
 
         .top-bar {
@@ -677,6 +734,700 @@
         .detail-row span:last-child {
             font-weight: 600;
         }
+
+        /* Mobile Topbar & Bottom Nav Component Defaults */
+        .mobile-topbar {
+            display: none;
+        }
+
+        .mobile-bottom-nav {
+            display: none;
+        }
+
+        .table-scroll-hint {
+            display: none;
+            font-size: 11px;
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            padding: 7px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive Security Classes */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .security-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+        }
+
+        .dash-totp-display {
+            font-family: monospace;
+            font-size: clamp(28px, 7vw, 42px);
+            font-weight: 800;
+            letter-spacing: clamp(4px, 1.5vw, 8px);
+            color: #00F2FE;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+            margin: 6px 0;
+            word-break: keep-all;
+        }
+
+        /* ==========================================================================
+           RESPONSIVE ARCHITECTURE: PORTRAIT = MOBILE VIEW, LANDSCAPE = PC VIEW
+           ========================================================================== */
+
+        /* --------------------------------------------------------------------------
+           1. MOBILE VIEW: Portrait orientation (up to 1024px) or Narrow Screens (<=640px)
+           -------------------------------------------------------------------------- */
+        @media screen and (orientation: portrait) and (max-width: 1024px),
+               screen and (max-width: 640px) {
+            body {
+                flex-direction: column;
+                overflow-x: hidden;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .mobile-topbar {
+                display: flex !important;
+                position: sticky;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 60px;
+                background: rgba(11, 15, 25, 0.95);
+                backdrop-filter: blur(16px);
+                border-bottom: 1px solid var(--bg-card-border);
+                padding: 0 16px;
+                align-items: center;
+                justify-content: space-between;
+                z-index: 1000;
+            }
+
+            .mobile-nav-toggle {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                border: 1px solid var(--bg-card-border);
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--text-main);
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .mobile-nav-toggle:active {
+                background: rgba(0, 242, 254, 0.15);
+                color: var(--accent-cyan);
+            }
+
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+                color: white;
+            }
+
+            .brand-logo-sm {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                color: #070913;
+            }
+
+            .mobile-brand-text {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: 16px;
+            }
+
+            .mobile-brand-badge {
+                background: rgba(0, 242, 254, 0.15);
+                color: var(--accent-cyan);
+                border: 1px solid rgba(0, 242, 254, 0.3);
+                padding: 2px 6px;
+                border-radius: 6px;
+                font-size: 10px;
+                letter-spacing: 0.5px;
+            }
+
+            .mobile-topbar-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .mobile-icon-btn {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                border: 1px solid var(--bg-card-border);
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--text-muted);
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .mobile-icon-btn:hover, .mobile-icon-btn:active {
+                color: var(--accent-cyan);
+                border-color: var(--accent-cyan);
+            }
+
+            .mobile-icon-btn.danger:hover, .mobile-icon-btn.danger:active {
+                color: var(--accent-red);
+                border-color: var(--accent-red);
+            }
+
+            .sidebar-backdrop {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 280px;
+                max-width: 85vw;
+                height: 100vh;
+                height: 100dvh;
+                background: rgba(11, 15, 25, 0.98);
+                backdrop-filter: blur(20px);
+                border-right: 1px solid var(--bg-card-border);
+                z-index: 1100;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: none;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+            }
+
+            .sidebar-close-btn {
+                display: flex !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 20px 16px 90px 16px;
+                box-sizing: border-box;
+                overflow-x: hidden;
+                min-width: 0;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+                margin-bottom: 22px;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .page-title p {
+                font-size: 13px;
+            }
+
+            .header-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .header-actions .btn-action {
+                flex: 1 1 calc(50% - 8px);
+                min-width: 120px;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: 13px;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 14px;
+                margin-bottom: 22px;
+            }
+
+            .stat-card {
+                padding: 16px 14px;
+                border-radius: 14px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+
+            .stat-title {
+                font-size: 11px;
+            }
+
+            .stat-icon-box {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+
+            .table-scroll-hint {
+                display: flex !important;
+            }
+
+            .table-responsive {
+                border: 1px solid var(--bg-card-border);
+                border-radius: 12px;
+                background: rgba(0, 0, 0, 0.2);
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-responsive table {
+                min-width: 640px;
+            }
+
+            .dashboard-section {
+                padding: 18px 14px;
+                border-radius: 16px;
+                margin-bottom: 22px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .table-controls {
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .mobile-bottom-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 62px;
+                background: rgba(11, 15, 25, 0.96);
+                backdrop-filter: blur(20px);
+                border-top: 1px solid var(--bg-card-border);
+                z-index: 1000;
+                justify-content: space-around;
+                align-items: center;
+                padding: 4px 6px;
+                padding-bottom: max(4px, env(safe-area-inset-bottom));
+                box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            }
+
+            .bottom-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                background: none;
+                border: none;
+                color: var(--text-muted);
+                font-size: 11px;
+                font-weight: 600;
+                cursor: pointer;
+                padding: 6px 2px;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+            }
+
+            .bottom-nav-item i {
+                font-size: 18px;
+                transition: transform 0.2s ease;
+            }
+
+            .bottom-nav-item.active {
+                color: var(--accent-cyan);
+            }
+
+            .bottom-nav-item.active i {
+                transform: translateY(-2px);
+                text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr !important;
+                gap: 16px;
+            }
+
+            .security-card {
+                padding: 20px 16px;
+                border-radius: 14px;
+            }
+        }
+
+        /* Narrow mobile screens (<= 480px) */
+        @media screen and (max-width: 480px) {
+            .main-content {
+                padding: 14px 12px 90px 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 12px 10px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .stat-foot {
+                font-size: 10px;
+            }
+
+            .header-actions .btn-action {
+                flex: 1 1 100%;
+            }
+
+            .auth-overlay {
+                padding: 12px;
+            }
+
+            .auth-card {
+                padding: 24px 16px;
+                border-radius: 16px;
+            }
+
+            .auth-title {
+                font-size: 22px;
+            }
+
+            .auth-sub {
+                font-size: 13px;
+                margin-bottom: 18px;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+
+            .modal-content {
+                padding: 18px 14px;
+                border-radius: 14px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 4px;
+                padding: 8px 0;
+            }
+
+            .detail-row span:last-child {
+                word-break: break-all;
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           2. PC / LANDSCAPE VIEW: Landscape orientation (min-width: 641px) or Desktop (min-width: 1025px)
+           Guarantees that rotating a device to Landscape ALWAYS gives the full PC View!
+           -------------------------------------------------------------------------- */
+        @media screen and (orientation: landscape) and (min-width: 641px),
+               screen and (min-width: 1025px) {
+            body {
+                display: flex !important;
+                flex-direction: row !important;
+                min-height: 100vh !important;
+                width: 100% !important;
+                overflow-x: hidden !important;
+            }
+
+            /* Hide Mobile Nav Elements */
+            .mobile-topbar {
+                display: none !important;
+            }
+
+            .mobile-bottom-nav {
+                display: none !important;
+            }
+
+            .sidebar-backdrop {
+                display: none !important;
+            }
+
+            .sidebar-close-btn {
+                display: none !important;
+            }
+
+            /* Fixed Left Sidebar (PC View) */
+            .sidebar {
+                display: flex !important;
+                flex-direction: column !important;
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                width: 260px !important;
+                max-width: 260px !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                background: rgba(11, 15, 25, 0.95) !important;
+                backdrop-filter: blur(20px) !important;
+                border-right: 1px solid var(--bg-card-border) !important;
+                z-index: 100 !important;
+                transform: none !important;
+                box-shadow: none !important;
+                overflow-y: auto !important;
+                padding: 24px 20px !important;
+            }
+
+            /* PC Main Content Layout */
+            .main-content {
+                display: block !important;
+                margin-left: 260px !important;
+                width: calc(100% - 260px) !important;
+                max-width: calc(100% - 260px) !important;
+                padding: 28px 36px 40px 36px !important;
+                min-height: 100vh !important;
+                box-sizing: border-box !important;
+                overflow-x: hidden !important;
+            }
+
+            .top-bar {
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                margin-bottom: 26px !important;
+                gap: 20px !important;
+            }
+
+            .header-actions {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                width: auto !important;
+                gap: 12px !important;
+            }
+
+            .header-actions .btn-action {
+                flex: initial !important;
+                width: auto !important;
+            }
+
+            /* 4-column Stats in PC View */
+            .stats-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 18px !important;
+                margin-bottom: 26px !important;
+            }
+
+            .stat-card {
+                padding: 20px 18px !important;
+            }
+
+            .stat-value {
+                font-size: 26px !important;
+            }
+
+            /* 2-column Security Layout in PC View */
+            .security-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 24px !important;
+            }
+
+            .dashboard-section {
+                padding: 24px !important;
+                border-radius: 18px !important;
+                margin-bottom: 28px !important;
+            }
+
+            .section-header {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+
+            .table-scroll-hint {
+                display: none !important;
+            }
+        }
+
+        /* Compact adaptations for mobile landscape viewports with low screen height (e.g. phones in landscape) */
+        @media screen and (orientation: landscape) and (max-height: 550px) {
+            .sidebar {
+                padding: 14px 14px !important;
+            }
+
+            .sidebar-brand {
+                margin-bottom: 14px !important;
+            }
+
+            .nav-menu {
+                gap: 4px !important;
+            }
+
+            .nav-item a {
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+            }
+
+            .sidebar-footer {
+                margin-top: 14px !important;
+                padding-top: 12px !important;
+            }
+
+            .user-pill {
+                padding: 6px 10px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .btn-sidebar-action {
+                padding: 7px 10px !important;
+                font-size: 11px !important;
+            }
+
+            .main-content {
+                padding: 16px 20px 30px 20px !important;
+            }
+
+            .top-bar {
+                margin-bottom: 14px !important;
+            }
+
+            .stats-grid {
+                gap: 10px !important;
+                margin-bottom: 16px !important;
+            }
+
+            .stat-card {
+                padding: 12px 14px !important;
+            }
+
+            .stat-value {
+                font-size: 20px !important;
+            }
+
+            .modal-content {
+                max-height: 92vh !important;
+                overflow-y: auto !important;
+                padding: 18px 20px !important;
+            }
+        }
+
+        /* Compact PC view for phones / small tablets in landscape (641px - 1100px wide) */
+        @media screen and (orientation: landscape) and (min-width: 641px) and (max-width: 1100px) {
+            .sidebar {
+                width: 210px !important;
+                max-width: 210px !important;
+            }
+
+            .main-content {
+                margin-left: 210px !important;
+                width: calc(100% - 210px) !important;
+                max-width: calc(100% - 210px) !important;
+                padding: 18px 20px 30px 20px !important;
+            }
+
+            .brand-name {
+                font-size: 16px !important;
+            }
+
+            .top-bar {
+                flex-wrap: wrap !important;
+                gap: 12px !important;
+            }
+
+            .page-title h1 {
+                font-size: 22px !important;
+                white-space: nowrap;
+            }
+
+            .page-title p {
+                font-size: 12px !important;
+            }
+
+            .header-actions {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+            }
+
+            .header-actions .btn-action {
+                white-space: nowrap !important;
+                padding: 8px 12px !important;
+                font-size: 12px !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .stat-title {
+                font-size: 11px !important;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .table-responsive table {
+                min-width: 600px;
+            }
+        }
+
+        /* Keep table cells on one line in portrait so rows don't stack into tall blocks */
+        @media screen and (orientation: portrait) and (max-width: 1024px),
+               screen and (max-width: 640px) {
+            .table-responsive th,
+            .table-responsive td {
+                white-space: nowrap;
+                padding: 12px 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -688,34 +1439,64 @@
         </div>
     </div>
 
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-        <a href="#" class="sidebar-brand">
-            <div class="brand-logo"><i class="fa-solid fa-brain"></i></div>
-            <div class="brand-name">
-                OfoniTech
-                <span>ADMIN PANEL</span>
+    <!-- Mobile Top Navigation Bar -->
+    <header class="mobile-topbar" id="mobileTopbar">
+        <button class="mobile-nav-toggle" id="mobileNavToggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="mobile-brand">
+            <div class="brand-logo-sm"><i class="fa-solid fa-brain"></i></div>
+            <div class="mobile-brand-text">
+                <span>OfoniTech</span>
+                <span class="mobile-brand-badge">ADMIN</span>
             </div>
-        </a>
+        </div>
+        <div class="mobile-topbar-actions">
+            <button class="mobile-icon-btn" onclick="loadDashboardData()" title="Refresh Data">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+            <button class="mobile-icon-btn danger" onclick="adminLogout()" title="Lock & Log Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Backdrop Overlay for Mobile Drawer -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="adminSidebar">
+        <div class="sidebar-header-row">
+            <a href="#" class="sidebar-brand">
+                <div class="brand-logo"><i class="fa-solid fa-brain"></i></div>
+                <div class="brand-name">
+                    OfoniTech
+                    <span>ADMIN PANEL</span>
+                </div>
+            </a>
+            <button class="sidebar-close-btn" type="button" onclick="closeSidebar()" aria-label="Close Sidebar">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
         <ul class="nav-menu">
             <li class="nav-item active" id="menu-overview">
-                <a href="#overview" onclick="showTab('overview')">
+                <a href="#overview" onclick="showTab('overview'); closeSidebar();">
                     <i class="fa-solid fa-chart-pie"></i> Overview
                 </a>
             </li>
             <li class="nav-item" id="menu-enrollments">
-                <a href="#enrollments" onclick="showTab('enrollments')">
+                <a href="#enrollments" onclick="showTab('enrollments'); closeSidebar();">
                     <i class="fa-solid fa-user-graduate"></i> Enrollments
                 </a>
             </li>
             <li class="nav-item" id="menu-inquiries">
-                <a href="#inquiries" onclick="showTab('inquiries')">
+                <a href="#inquiries" onclick="showTab('inquiries'); closeSidebar();">
                     <i class="fa-solid fa-comments"></i> Inquiries
                 </a>
             </li>
             <li class="nav-item" id="menu-security">
-                <a href="#security" onclick="showTab('security')">
+                <a href="#security" onclick="showTab('security'); closeSidebar();">
                     <i class="fa-solid fa-shield-halved"></i> 2FA & Authenticator
                 </a>
             </li>
@@ -729,7 +1510,7 @@
                     <div class="user-role">Super Administrator</div>
                 </div>
             </div>
-            <button class="btn-sidebar-action" type="button" onclick="openSecurityModal()">
+            <button class="btn-sidebar-action" type="button" onclick="openSecurityModal(); closeSidebar();">
                 <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i> 2FA & Security Settings
             </button>
             <button class="btn-sidebar-action danger" type="button" onclick="adminLogout()">
@@ -806,6 +1587,7 @@
                     <h2 class="section-title">Recent Student Registrations</h2>
                     <button class="btn-action" onclick="showTab('enrollments')">View All</button>
                 </div>
+                <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe table horizontally to view all columns</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -839,6 +1621,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe table horizontally to view all columns</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -873,6 +1656,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="table-scroll-hint"><i class="fa-solid fa-arrows-left-right"></i> Swipe table horizontally to view all columns</div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -892,12 +1676,14 @@
                     </table>
                 </div>
             </div>
+        </div>
+
         <!-- SECURITY & GOOGLE AUTHENTICATOR TAB -->
         <div id="tab-security-content" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px;">
+            <div class="security-grid">
                 <!-- Google Authenticator Display Card -->
-                <div style="background: var(--bg-card); border: 1px solid var(--bg-card-border); border-radius: 16px; padding: 28px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <div class="security-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
                         <h3 style="font-family: var(--font-head); font-size: 20px; display: flex; align-items: center; gap: 10px;">
                             <i class="fa-solid fa-mobile-screen" style="color: var(--accent-cyan);"></i> Google Authenticator (2FA)
                         </h3>
@@ -915,7 +1701,7 @@
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent-cyan); font-weight: 700; margin-bottom: 8px;">
                             <i class="fa-solid fa-signal"></i> Current Google Authenticator Code
                         </div>
-                        <div id="dashLiveTotp" style="font-family: monospace; font-size: 42px; font-weight: 800; letter-spacing: 8px; color: #00F2FE; text-shadow: 0 0 20px rgba(0, 242, 254, 0.6); margin: 6px 0;">
+                        <div id="dashLiveTotp" class="dash-totp-display">
                             --- ---
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-top: 8px;">
@@ -951,7 +1737,7 @@
                 </div>
 
                 <!-- Master Password Management Card -->
-                <div style="background: var(--bg-card); border: 1px solid var(--bg-card-border); border-radius: 16px; padding: 28px;">
+                <div class="security-card">
                     <h3 style="font-family: var(--font-head); font-size: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
                         <i class="fa-solid fa-key" style="color: var(--accent-blue);"></i> Master Password Management
                     </h3>
@@ -984,6 +1770,26 @@
         </div>
 
     </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <button class="bottom-nav-item active" id="bnav-overview" type="button" onclick="showTab('overview')">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Overview</span>
+        </button>
+        <button class="bottom-nav-item" id="bnav-enrollments" type="button" onclick="showTab('enrollments')">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Students</span>
+        </button>
+        <button class="bottom-nav-item" id="bnav-inquiries" type="button" onclick="showTab('inquiries')">
+            <i class="fa-solid fa-comments"></i>
+            <span>Inquiries</span>
+        </button>
+        <button class="bottom-nav-item" id="bnav-security" type="button" onclick="showTab('security')">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>2FA & Sec</span>
+        </button>
+    </nav>
 
     <!-- Security Settings Modal -->
     <div class="modal" id="securityModal">
@@ -1402,7 +2208,38 @@
             document.getElementById('dashPassConfirm').value = '';
         }
 
+        // Sidebar Drawer Controls for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar) return;
+            const isOpen = sidebar.classList.toggle('open');
+            if (backdrop) {
+                if (isOpen) backdrop.classList.add('active');
+                else backdrop.classList.remove('active');
+            }
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar) sidebar.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('active');
+        }
+
+        // Auto-close sidebar drawer when rotating to landscape or resizing to PC view
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 640 && window.matchMedia('(orientation: landscape)').matches) {
+                closeSidebar();
+            }
+        });
+
+        window.addEventListener('orientationchange', () => {
+            closeSidebar();
+        });
+
         function adminLogout() {
+            closeSidebar();
             sessionStorage.removeItem(SESSION_KEY);
             renderLoginView();
             document.getElementById('authOverlay').style.display = 'flex';
@@ -1418,9 +2255,16 @@
         }
 
         function showTab(tabName) {
+            closeSidebar();
+
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const menuEl = document.getElementById(`menu-${tabName}`);
             if (menuEl) menuEl.classList.add('active');
+
+            // Sync Mobile Bottom Navigation
+            document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
+            const bnavEl = document.getElementById(`bnav-${tabName}`);
+            if (bnavEl) bnavEl.classList.add('active');
 
             document.getElementById('tab-overview-content').style.display = tabName === 'overview' ? 'block' : 'none';
             document.getElementById('tab-enrollments-content').style.display = tabName === 'enrollments' ? 'block' : 'none';
